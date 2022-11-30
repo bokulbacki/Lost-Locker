@@ -25,7 +25,7 @@ cur.execute('CREATE TABLE item (id serial PRIMARY KEY,'
 
 cur.execute('INSERT INTO item (type, location, brand, color, status)'
             'VALUES (%s, %s, %s, %s, %s)',
-            ('iphone',
+            ('Bo IPHONE',
              'classroom 1',
              'samsung',
              'silver',

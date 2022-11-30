@@ -1,5 +1,10 @@
+import re
+from datetime import datetime
 from flask import Flask
 app = Flask(__name__)
+
+import os
+import psycopg2
 
 @app.route("/")
 def home():
@@ -7,7 +12,14 @@ def home():
 
 @app.route("/createItem")
 def createItem():
-    return "Create item" 
+    return ('INSERT INTO item (type, location, brand, color, status)'
+            'VALUES (%s, %s, %s, %s, %s)',
+            ('Bo IPHONE',
+             'classroom 1',
+             'samsung',
+             'silver',
+             'lost')
+            )
 
 @app.route("/removeItem")
 def removeItem():
@@ -17,10 +29,6 @@ def removeItem():
 def login():
     return "logging in" 
    
-
-
-
-
 
 @app.route("/hello/<name>")
 def hello_there(name):
