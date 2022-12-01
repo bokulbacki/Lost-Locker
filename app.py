@@ -1,5 +1,7 @@
 import os
 import psycopg2
+import re
+from datetime import datetime
 from flask import Flask, render_template, request, url_for, redirect
 
 
@@ -64,10 +66,6 @@ def removeItem():
 def login():
     return "logging in" 
    
-
-
-
-
 
 @app.route("/hello/<name>")
 def hello_there(name):
