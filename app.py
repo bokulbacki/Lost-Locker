@@ -1,13 +1,60 @@
-from flask import Flask
+import os
+import psycopg2
+from flask import Flask, render_template, request, url_for, redirect
+
+
 app = Flask(__name__)
+
+
+def get_db_connection():
+    conn = psycopg2.connect(host='localhost',
+                            database='postgres',
+                            user=os.environ['DB_USERNAME'],
+                            password=os.environ['DB_PASSWORD'])
+    return conn 
+
 
 @app.route("/")
 def home():
-    return "Hello, Flask!"
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM item;')
+    item = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('index.html', item=item)
 
-@app.route("/createItem")
-def createItem():
-    return "Create item" 
+
+
+@app.route('/createItem/', methods=('GET', 'POST'))
+def create():
+    if request.method == 'POST':
+        item_type = request.form['item_type']
+        location = request.form['location']
+        brand = request.form['brand']
+        color = request.form['color']
+        status = request.form['status']
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('INSERT INTO item (item_type, location, brand, color, status)'
+                    'VALUES (%s, %s, %s, %s, %s)',
+                    (item_type, location, brand, color, status))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect(url_for('home'))
+    return render_template('createItem.html')
+    
+    
+    
+    # data = request.get_json()
+    # name = data["brand"]
+
+    # init_db.connect()
+    
+    # test = init_db.cur.fetchone()
+    # return test
 
 @app.route("/removeItem")
 def removeItem():

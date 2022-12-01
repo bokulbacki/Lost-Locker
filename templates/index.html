@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} items {% endblock %}</h1>
+    {% for item in item %}
+        <div class='item'>
+            <h3>#{{ item[0] }} - {{ item[1] }} BY {{ item[2] }}</h3>
+            <i><p>({{ item[3] }} pages)</p></i>
+            <p class='review'>{{ item[4] }}</p>
+            <i><p>Added {{ item[5] }}</p></i>
+        </div>
+    {% endfor %}
+{% endblock %}

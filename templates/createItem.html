@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Add a New Item {% endblock %}</h1>
+    <form method="post">
+        <p>
+            <label for="item_type">Title</label>
+            <input type="text" name="item_type"
+                   placeholder="Item Type">
+            </input>
+        </p>
+
+        <p>
+            <label for="location">Location</label>
+            <input type="text" name="location"
+                   placeholder="Item Location">
+            </input>
+        </p>
+
+        <p>
+            <label for="Brand">Brand</label>
+            <input type="text" name="brand"
+                   placeholder="Brand">
+            </input>
+        </p>
+        <p>
+            <label for="color">Color</label>
+            <input type="text" name="color"
+                   placeholder="Item color">
+            </input>
+        </p>
+        <p>
+            <label for="status">Status</label>
+            <input type="text" name="status"
+                   placeholder="Item status">
+            </input>
+        </p>
+        <p>
+            <button type="submit">Submit</button>
+        </p>
+    </form>
+{% endblock %}
