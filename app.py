@@ -39,9 +39,21 @@ def create():
 
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute('INSERT INTO item (item_type, location, brand, color, status)'
-                    'VALUES (%s, %s, %s, %s, %s)',
-                    (item_type, location, brand, color, status))
+        
+        cur.execute('Select * From Item Where item_type = %s and status = %s', (item_type, status))
+
+        itemMatch = cur.fetchall()
+        if itemMatch:
+            print(itemMatch)
+            print("Found a match")
+            return itemMatch
+        else:
+            cur.execute('INSERT INTO item (item_type, location, brand, color, status)'
+                        'VALUES (%s, %s, %s, %s, %s)',
+                        (item_type, location, brand, color, status))
+
+
+        
         conn.commit()
         cur.close()
         conn.close()
@@ -62,9 +74,9 @@ def create():
 def removeItem():
     return "Removing item" 
 
-@app.route("/login")
-def login():
-    return "logging in" 
+@app.route("/USD")
+def USD():
+    return render_template('USDtemp.html')
    
 
 @app.route("/hello/<name>")
