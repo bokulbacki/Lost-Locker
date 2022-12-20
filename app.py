@@ -21,10 +21,10 @@ def home():
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute('SELECT * FROM item;')
-    item = cur.fetchall()
+    items = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template('index.html', item=item)
+    return render_template('index.html', items=items)
 
 
 
