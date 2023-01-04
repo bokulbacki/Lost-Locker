@@ -167,7 +167,7 @@ def create():
         cur.close()
         conn.close()
         return redirect(url_for('home'))
-    return render_template('createItem.html')
+    return render_template('createItem2.html')
         
 
         
