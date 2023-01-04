@@ -4,39 +4,78 @@
     <h1>{% block title %} Add a New Item {% endblock %}</h1>
     <form method="post">
         <p>
-            <label for="item_type">Title</label>
-            <input type="text" name="item_type"
-                   placeholder="Item Type">
-            </input>
+
+
+           
+
+
+
+        
+            <div class="form-label-group">
+                <select name="name" id="cboOptions" onchange="showDiv('div',this)" class="form-control">
+                  <option value="">What did you lose?</option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Device">Device</option>
+                   <option value="Wallet">Wallet/Purse</option>
+                  <option value="Backpack">Backpack</option>
+                   <option value="Waterbottle">Waterbottle</option>
+                  <option value="Other">Other</option>
+                </select>
+                
+                <div id="ClothingType" style="display:none;">
+                  <select id="type" class = "form-control">
+                  <option value = "" > What type of clothing?</option>
+                    <option value="2">T-shirt</option>
+                  <option value="1">Jacket</option>
+                   <option value="2">Sweatshirt</option>
+                  <option value="1">Hat</option>
+                   
+                  <option value="1">Other</option>
+                  </select>
+                </div>
+                
+                <div id="Brand" style="display:none;">
+                  <select id="type" class = "form-control">
+                  <option value="">What brand?</option>
+                    <option value="2">Lulu</option>
+                  <option value="1">Vuori</option>
+                 
+                   
+                  <option value="1">Other</option>
+                  </select>
+                </div>
+              
+              </div>
+        
+            
         </p>
 
-        <p>
-            <label for="location">Location</label>
-            <input type="text" name="location"
-                   placeholder="Item Location">
-            </input>
-        </p>
+      
 
-        <p>
-            <label for="Brand">Brand</label>
-            <input type="text" name="brand"
-                   placeholder="Brand">
-            </input>
-        </p>
-        <p>
-            <label for="color">Color</label>
-            <input type="text" name="color"
-                   placeholder="Item color">
-            </input>
-        </p>
-        <p>
-            <label for="status">Status</label>
-            <input type="text" name="status"
-                   placeholder="Item status">
-            </input>
-        </p>
+       
+
+      
+        
+
+       
+     
         <p>
             <button type="submit">Submit</button>
         </p>
     </form>
+
+    <script> function showDiv(prefix, chooser) {
+        var selectedOption = (chooser.options[chooser.selectedIndex].value);
+        if (selectedOption == "Clothing") {
+          var div = ClothingType
+          div.style.display = 'Block';
+          
+          var div2 = Brand
+          div2.style.display = 'Block';
+        } else {
+          var div = document.getElementById(prefix + "2");
+          div.style.display = 'None';
+        }
+      }
+      </script>
 {% endblock %}
