@@ -12,7 +12,7 @@
 
             <!--User chooses what type of item they lost -->
             <div class="form-label-group">
-                <select name="name" id="cboOptions" onchange="showDiv('div',this)" class="form-control">
+                <select name="item_type" id="" onchange="showDiv('div',this)" class="form-control">
                   <option value="">What did you lose?</option>
                   <option value="Clothing">Clothing</option>
                   <option value="Device">Device</option>
@@ -25,12 +25,12 @@
 
                 <!--User chooses what type of clothing they lost -->
                 <div id="ClothingType" style="display:none;">
-                  <select id="type" class = "form-control">
+                  <select name="ClothingType" id="type" class = "form-control">
                   <option value = "" > What type of clothing?</option>
-                    <option value="2">T-shirt</option>
-                  <option value="1">Jacket</option>
-                   <option value="2">Sweatshirt</option>
-                  <option value="1">Hat</option>
+                    <option value="T-shirt">T-shirt</option>
+                  <option value="Jacket">Jacket</option>
+                   <option value="Sweatshirt">Sweatshirt</option>
+                  <option value="Hat">Hat</option>
                    
                   <option value="1">Other</option>
                   </select>
@@ -39,10 +39,10 @@
 
                 <!--User chooses what type of clothing brand they lost -->
                 <div id="ClothingBrand" style="display:none;">
-                  <select id="type" class = "form-control">
+                  <select name="ClothingBrand" id="type" class = "form-control">
                   <option value="">What brand?</option>
-                    <option value="2">Lulu</option>
-                  <option value="1">Vuori</option>
+                    <option value="Lulu">Lulu</option>
+                  <option value="Vuori">Vuori</option>
                  
                 
                 
@@ -52,7 +52,7 @@
 
                 <!--User chooses what color their item is -->
                 <div id="Color" style="display:none;">
-                  <select id="type" class = "form-control">
+                  <select name="Color" id="type" class = "form-control">
                   <option value="">What color?</option>
                   <option value="Blue">Blue</option>
                   <option value="Black">Black</option>
@@ -87,7 +87,7 @@
                 </div>
 
                 <!--User chooses their waterbottle cap type -->
-                <div id="Stickers" style="display:none;">
+                <div id="BottleCap" style="display:none;">
                   <select id="type" class = "form-control">
                   <option value = "" > What was your cap type?</option>
                     <option value="straw">Screw on, no straw</option>
@@ -156,8 +156,14 @@
           var div = ClothingType
           div.style.display = 'Block';
           
-          var div2 = Brand
+          var div2 = ClothingBrand
           div2.style.display = 'Block';
+
+          var div3 = Color 
+          div3.style.display = 'Block'
+
+          
+
         } else {
           var div = document.getElementById(prefix + "2");
           div.style.display = 'None';

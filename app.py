@@ -40,47 +40,65 @@ def create():
         conn = get_db_connection()
         cur = conn.cursor()
         
-        if request.form['item_type'] == "clothing":
+        print(request.form)
+
+        
+        item = None
+        clothing_type = None
+        brand = None
+        color = None
+        location = "library"
+        status = "lost"
+
+
+        if request.form['item_type'] == "Clothing":
+            print("entered")
+            item = "Clothing"
+            clothing_type = request.form['ClothingType']
+            brand = request.form['ClothingBrand']
+            color = request.form['Color']
             
-            item_type = request.form['item_type']
-            clothing_type = request.form['type2']
-            brand = request.form['brand']
-            color = request.form['color']
-            location = request.form['location']
 
             if location == None:
-                lost_item_data = [item_type, clothing_type, brand, color]
+                lost_item_data = [item, clothing_type, brand, color]
             else:
-                lost_item_data = [item_type, clothing_type, brand, color, location]
+                lost_item_data = [item, clothing_type, brand, color, location]
 
 
             #chnge lost status
-            cur.execute('Select * From Item Where item_type = %s and status = %s', (item_type, "lost"))
-            itemMatch = cur.fetchall()
+            cur.execute('Select * From Item Where item_type = %s and status = %s', (item, "lost"))
+            typeMatch = cur.fetchall()
 
+            
            
             
-            if itemMatch:
-
-                dictionary = {}
+            if typeMatch:
+                print(len(typeMatch))
+                found_items_dictionary = {}
                 similarity_dictionary = {}
                 itemMatchArrays = []
-                for entry in itemMatch:
-                    dictionary[entry[0]] = [entry[1], entry[2], entry[3], entry[4], entry[5]]
-                itemMatchArrays.append(dictionary)
+
+                #for all found items of the same  item type (clothing, waterbottle)
+                for entry in typeMatch:
+                    print(entry)
+                    found_items_dictionary[entry[0]] = [entry[1], entry[2], entry[3], entry[4], entry[5]]
+                itemMatchArrays.append(found_items_dictionary)
 
                 print(lost_item_data)
 
-                for key in dictionary:
-                    common_characteristics = len(set(lost_item_data) & set(dictionary[key]))
-                    print(dictionary[key])
+                for item_id in found_items_dictionary:
+                    print(item_id)
+                    common_characteristics = len(set(lost_item_data) & set(found_items_dictionary[item_id]))
+                   
                     
-                    similarity_dictionary[key] = common_characteristics
+                    similarity_dictionary[item_id] = common_characteristics
 
 
-                max_key = max(similarity_dictionary, key=similarity_dictionary.get)
-                print(max_key)
-                return dictionary[max_key]
+                best_match = max(similarity_dictionary, key=similarity_dictionary.get)
+                print(best_match)
+                if best_match > 3:
+
+                    return found_items_dictionary[best_match]
 
            
 
@@ -120,7 +138,7 @@ def create():
 
         elif request.form['item_type'] == "bag":
 
-            item_type = request.form['item_type']
+            item = request.form['item_type']
             bag_type = request.form['type2']
             brand = request.form['brand']
             color = request.form['color']
@@ -128,14 +146,14 @@ def create():
             location = request.form['location']
 
             if location == None:
-                lost_item_data = [item_type, bag_type, brand, color, stickers]
+                lost_item_data = [item, bag_type, brand, color, stickers]
             else:
-                lost_item_data = [item_type, bag_type, brand, color, stickers, location]
+                lost_item_data = [item, bag_type, brand, color, stickers, location]
         
 
         elif request.form['item_type'] == "wallet/purse":
 
-            item_type = request.form['item_type']
+            item = request.form['item_type']
             walletpurse_type = request.form['type2']
             brand = request.form['brand']
             color = request.form['color']
@@ -143,18 +161,15 @@ def create():
             location = request.form['location']
 
             if location == None:
-                lost_item_data = [item_type, walletpurse_type, brand, color, stickers]
+                lost_item_data = [item, walletpurse_type, brand, color, stickers]
             else:
-                lost_item_data = [item_type, walletpurse_type, brand, color, stickers, location]
+                lost_item_data = [item, walletpurse_type, brand, color, stickers, location]
         
 
         #elif request.form['item_type'] == "other":
 
 
-        
-
-        status = "lost"
-
+      
         #create characteristics array for jaccard comparison
         
 
@@ -162,7 +177,7 @@ def create():
         
         cur.execute('INSERT INTO item (item_type, type2, brand, color, location, status)'
                         'VALUES (%s, %s, %s, %s, %s, %s)',
-                        (item_type, clothing_type, brand, color, location, status))
+                        (item, clothing_type, brand, color, location, status))
 
 
         
@@ -170,7 +185,7 @@ def create():
         cur.close()
         conn.close()
         return redirect(url_for('home'))
-    return render_template('createItem2.html')
+    return render_template('createItem.html')
         
 
         

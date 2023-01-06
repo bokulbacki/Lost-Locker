@@ -31,10 +31,10 @@ cur.execute('CREATE TABLE item (id serial PRIMARY KEY,'
 
 cur.execute('INSERT INTO item (item_type, type2, brand, color, location, status)'
         'VALUES (%s, %s, %s, %s, %s, %s)',
-        ('clothing',
-        'tshirt',
+        ('Clothing',
+        'T-shirt',
         'billabong',
-        'black',
+        'Black',
         'library',
         'lost')
         )
@@ -42,10 +42,10 @@ cur.execute('INSERT INTO item (item_type, type2, brand, color, location, status)
 
 cur.execute('INSERT INTO item (item_type, type2, brand, color, location, status)'
         'VALUES (%s, %s, %s, %s, %s, %s)',
-        ('clothing',
-        'tshirt',
-        'lulu',
-        'blue',
+        ('Clothing',
+        'T-shirt',
+        'Lulu',
+        'Blue',
         'library',
         'lost')
         )
@@ -53,8 +53,8 @@ cur.execute('INSERT INTO item (item_type, type2, brand, color, location, status)
 
 cur.execute('INSERT INTO item (item_type, type2, brand, color, location, status)'
         'VALUES (%s, %s, %s, %s, %s, %s)',
-        ('clothing',
-        'tshirt',
+        ('Clothing',
+        'T-shirt',
         'vuori',
         'green',
         'library',
@@ -63,20 +63,20 @@ cur.execute('INSERT INTO item (item_type, type2, brand, color, location, status)
 
 cur.execute('INSERT INTO item (item_type, type2, brand, color, location, status)'
         'VALUES (%s, %s, %s, %s, %s, %s)',
-        ('clothing',
-        'tshirt',
-        'lulu',
-        'black',
+        ('Clothing',
+        'T-shirt',
+        'Lulu',
+        'Black',
         'library',
         'lost')
         )
 
 cur.execute('INSERT INTO item (item_type, type2, brand, color, location, status)'
         'VALUES (%s, %s, %s, %s, %s, %s)',
-        ('clothing',
-        'tshirt',
-        'lulu',
-        'yellow',
+        ('Clothing',
+        'T-shirt',
+        'Lulu',
+        'Yellow',
         'slp',
         'lost')
         )
