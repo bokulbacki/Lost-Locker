@@ -4,6 +4,9 @@ import re
 from datetime import datetime
 from flask import Flask, render_template, request, url_for, redirect
 
+from dotenv import load_dotenv
+load_dotenv()
+
 
 app = Flask(__name__)
 
@@ -11,8 +14,8 @@ app = Flask(__name__)
 def get_db_connection():
     conn = psycopg2.connect(host='localhost',
                             database='postgres',
-                            user=os.environ['DB_USERNAME'],
-                            password=os.environ['DB_PASSWORD'])
+                            user=os.getenv('DB_USERNAME'),
+                            password=os.getenv('DB_PASSWORD'))
     return conn 
 
 
