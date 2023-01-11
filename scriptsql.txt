@@ -312,6 +312,75 @@ Insert into item_attribute(itemType_id, attributeType_id) values (2,802);
 Insert into item_attribute(itemType_id, attributeType_id) values (2,803);
 Insert into item_attribute(itemType_id, attributeType_id) values (2,804);
 --Water Bottle relationships added above
+Insert into item_attribute(itemType_id, attributeType_id) values (3,132);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,133);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,134);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,135);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,136);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,137);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,138);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,139);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,401);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,402);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,403);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,404);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,405);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,406);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,407);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,408);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,409);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,410);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,411);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,601);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,602);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,603);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,604);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,605);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,606);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,607);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,608);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,609);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,701);
+Insert into item_attribute(itemType_id, attributeType_id) values (3,702);
+
+
+
+Insert into item_attribute(itemType_id, attributeType_id) values (5,201);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,202);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,203);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,204);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,205);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,206);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,207);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,208);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,209);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,210);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,211);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,212);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,213);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,214);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,215);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,216);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,217);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,601);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,602);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,603);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,604);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,605);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,606);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,607);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,608);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,609);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,701);
+Insert into item_attribute(itemType_id, attributeType_id) values (5,702);
+
+
+
+
+
+
+
+
 
 
 
