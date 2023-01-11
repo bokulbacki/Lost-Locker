@@ -1,0 +1,358 @@
+drop table item;
+drop table item_detail;
+drop table itemtype;
+drop table attributetype;
+drop table item_attribute;
+
+create table itemtype
+(
+  --itemtype_id  serial primary key,
+  itemtype_id integer not null primary key, -- autoincrement,
+  itemtype  varchar(40 )
+);
+
+create table attributetype
+(
+  --attributetype_id  serial primary key,
+  attributetype_id integer, -- autoincrement,
+  attributetype  varchar(100),
+  description varchar(100)
+ );
+
+create table item_attribute
+(
+  itemtype_id integer,
+  attributetype_id  integer
+ );
+
+create table item
+(
+  --item_id  serial primary key,
+  item_id integer not null primary key, -- autoincrement,
+  location  varchar(100),
+  notes  varchar(100),
+  submitted_by_user varchar(100),
+  datefound date,
+  status bool
+);
+
+create table item_detail
+(
+  item_id integer,
+  itemtype_id integer,
+  attributetype_id integer
+  
+);
+
+drop view v_lost_item;
+create view v_lost_item 
+AS 
+SELECT
+	ii.item_id,
+	ii.location,
+	ii.notes,
+	ii.submitted_by_user,
+	ii.datefound,
+	ii.status,
+	ity.itemtype_id,
+	ity.itemtype,
+	att.attributetype_id,
+	att.attributetype,
+	att.description
+FROM 
+	item ii, item_detail ide,  itemtype ity, attributeType att
+WHERE 
+     ii.item_id = ide.item_id 
+ and ide.itemtype_id = ity.itemtype_id 
+ and ide.attributetype_id = att.attributetype_id;
+
+
+-- Inset item types
+Insert into itemType (itemType_id, itemType) values (1,'Clothing');
+Insert into itemType (itemType_id, itemType) values (2,'Bottle');
+Insert into itemType (itemType_id, itemType) values (3,'Device');
+Insert into itemType (itemType_id, itemType) values (4,'Backpack/Bag/Purse');
+Insert into itemType (itemType_id, itemType) values (5,'Book');
+
+-- Insert item attributes
+
+Insert into attributeType (attributeType_id, attributeType, description) values (101,'Brand','Lulu');
+Insert into attributeType (attributeType_id, attributeType, description) values (102,'Brand','Stussy');
+Insert into attributeType (attributeType_id, attributeType, description) values (103,'Brand','Levis');
+Insert into attributeType (attributeType_id, attributeType, description) values (104,'Brand','Flojo');
+Insert into attributeType (attributeType_id, attributeType, description) values (105,'Brand','Nike');
+Insert into attributeType (attributeType_id, attributeType, description) values (106,'Brand','Adidas');
+Insert into attributeType (attributeType_id, attributeType, description) values (107,'Brand','Polo');
+Insert into attributeType (attributeType_id, attributeType, description) values (108,'Brand','Hanes');
+Insert into attributeType (attributeType_id, attributeType, description) values (109,'Brand','Fruit of the Loom');
+Insert into attributeType (attributeType_id, attributeType, description) values (110,'Brand','Wrangler');
+Insert into attributeType (attributeType_id, attributeType, description) values (111,'Brand','Under Armour');
+Insert into attributeType (attributeType_id, attributeType, description) values (112,'Brand','Patagonia');
+Insert into attributeType (attributeType_id, attributeType, description) values (113,'Brand','Old Navy');
+Insert into attributeType (attributeType_id, attributeType, description) values (114,'Brand','Champion');
+Insert into attributeType (attributeType_id, attributeType, description) values (115,'Brand','North Face');
+Insert into attributeType (attributeType_id, attributeType, description) values (116,'Brand','Vuori');
+Insert into attributeType (attributeType_id, attributeType, description) values (117,'Brand','Vans');
+Insert into attributeType (attributeType_id, attributeType, description) values (118,'Brand','Gap');
+Insert into attributeType (attributeType_id, attributeType, description) values (119,'Brand','H&M');
+Insert into attributeType (attributeType_id, attributeType, description) values (120,'Brand','Urban Outfitters');
+Insert into attributeType (attributeType_id, attributeType, description) values (121,'Brand','REI');
+Insert into attributeType (attributeType_id, attributeType, description) values (122,'Brand','Helly Hansen');
+Insert into attributeType (attributeType_id, attributeType, description) values (123,'Brand','Other/Unknown');
+
+Insert into attributeType (attributeType_id, attributeType, description) values (124,'Brand','Hydro Flask');
+Insert into attributeType (attributeType_id, attributeType, description) values (125,'Brand','Camelbak');
+Insert into attributeType (attributeType_id, attributeType, description) values (126,'Brand','Yeti');
+Insert into attributeType (attributeType_id, attributeType, description) values (127,'Brand','Klean Kanteen');
+Insert into attributeType (attributeType_id, attributeType, description) values (128,'Brand','Brita');
+Insert into attributeType (attributeType_id, attributeType, description) values (129,'Brand','Nalgene');
+Insert into attributeType (attributeType_id, attributeType, description) values (130,'Brand','Contigo');
+Insert into attributeType (attributeType_id, attributeType, description) values (131,'Brand','Stanley');
+
+Insert into attributeType (attributeType_id, attributeType, description) values (132,'Brand','Apple');
+Insert into attributeType (attributeType_id, attributeType, description) values (133,'Brand','Samsung');
+Insert into attributeType (attributeType_id, attributeType, description) values (134,'Brand','Google');
+Insert into attributeType (attributeType_id, attributeType, description) values (135,'Brand','Apple');
+Insert into attributeType (attributeType_id, attributeType, description) values (136,'Brand','Sony');
+Insert into attributeType (attributeType_id, attributeType, description) values (137,'Brand','HP');
+Insert into attributeType (attributeType_id, attributeType, description) values (138,'Brand','Garmin');
+Insert into attributeType (attributeType_id, attributeType, description) values (139,'Brand','Microsoft');
+
+Insert into attributeType (attributeType_id, attributeType, description) values (140,'Brand','Jansport');
+Insert into attributeType (attributeType_id, attributeType, description) values (141,'Brand','Herschel');
+Insert into attributeType (attributeType_id, attributeType, description) values (142,'Brand','Fjallraven');
+Insert into attributeType (attributeType_id, attributeType, description) values (143,'Brand','Osprey');
+
+
+
+
+Insert into attributeType (attributeType_id, attributeType, description) values (201,'Color','Red');
+Insert into attributeType (attributeType_id, attributeType, description) values (202,'Color','Blue');
+Insert into attributeType (attributeType_id, attributeType, description) values (203,'Color','Yellow');
+Insert into attributeType (attributeType_id, attributeType, description) values (204,'Color ','White');
+Insert into attributeType (attributeType_id, attributeType, description) values (205,'Color ','Black');
+Insert into attributeType (attributeType_id, attributeType, description) values (206,'Color ','Brown');
+Insert into attributeType (attributeType_id, attributeType, description) values (207,'Color ','Green');
+Insert into attributeType (attributeType_id, attributeType, description) values (208,'Color ','Purple');
+Insert into attributeType (attributeType_id, attributeType, description) values (209,'Color ','Pink');
+Insert into attributeType (attributeType_id, attributeType, description) values (210,'Color ','Clear');
+Insert into attributeType (attributeType_id, attributeType, description) values (211,'Color','Other');
+Insert into attributeType (attributeType_id, attributeType, description) values (212,'Color ','Grey');
+Insert into attributeType (attributeType_id, attributeType, description) values (213,'Color ','Orange');
+Insert into attributeType (attributeType_id, attributeType, description) values (214,'Color ','Beige');
+Insert into attributeType (attributeType_id, attributeType, description) values (215,'Color ','Gold');
+Insert into attributeType (attributeType_id, attributeType, description) values (216,'Color ','Silver');
+Insert into attributeType (attributeType_id, attributeType, description) values (217,'Color ','Wood');
+
+
+
+
+Insert into attributeType (attributeType_id, attributeType, description) values (401,'Model','iPhone');
+Insert into attributeType (attributeType_id, attributeType, description) values (402,'Model','iPad');
+Insert into attributeType (attributeType_id, attributeType, description) values (403,'Model','Mac');
+Insert into attributeType (attributeType_id, attributeType, description) values (404,'Model','Apple Watch');
+Insert into attributeType (attributeType_id, attributeType, description) values (405,'Model','Airpods');
+Insert into attributeType (attributeType_id, attributeType, description) values (406,'Model','S3');
+Insert into attributeType (attributeType_id, attributeType, description) values (407,'Model','Pixel');
+Insert into attributeType (attributeType_id, attributeType, description) values (408,'Model','Galaxy');
+Insert into attributeType (attributeType_id, attributeType, description) values (409,'Model','Galaxy Tablet');
+Insert into attributeType (attributeType_id, attributeType, description) values (410,'Model','Surface');
+Insert into attributeType (attributeType_id, attributeType, description) values (411,'Model','Other');
+
+
+Insert into attributeType (attributeType_id, attributeType, description) values (501,'Size','XL');
+Insert into attributeType (attributeType_id, attributeType, description) values (502,'Size','Large');
+Insert into attributeType (attributeType_id, attributeType, description) values (503,'Size','Medium');
+Insert into attributeType (attributeType_id, attributeType, description) values (504,'Size','Small');
+Insert into attributeType (attributeType_id, attributeType, description) values (505,'Size','XS');
+Insert into attributeType (attributeType_id, attributeType, description) values (506,'Size','32oz');
+Insert into attributeType (attributeType_id, attributeType, description) values (507,'Size','16oz');
+Insert into attributeType (attributeType_id, attributeType, description) values (508,'Size','64oz');
+Insert into attributeType (attributeType_id, attributeType, description) values (509,'Size','Other/Unknown');
+
+
+
+Insert into attributeType (attributeType_id, attributeType, description) values (301,'ClothingType','Shirt');
+Insert into attributeType (attributeType_id, attributeType, description) values (302,'ClothingType','Sweater');
+Insert into attributeType (attributeType_id, attributeType, description) values (303,'ClothingType','Hat');
+Insert into attributeType (attributeType_id, attributeType, description) values (304,'ClothingType','Pants');
+Insert into attributeType (attributeType_id, attributeType, description) values (305,'ClothingType','Shoes');
+Insert into attributeType (attributeType_id, attributeType, description) values (306,'ClothingType','Glasses/Sunglasses');
+Insert into attributeType (attributeType_id, attributeType, description) values (307,'ClothingType','Other');
+
+Insert into attributeType (attributeType_id, attributeType, description) values (601,'Location','Tram');
+Insert into attributeType (attributeType_id, attributeType, description) values (602,'Location','Copley Library');
+Insert into attributeType (attributeType_id, attributeType, description) values (603,'Location','SLP');
+Insert into attributeType (attributeType_id, attributeType, description) values (604,'Location','KSB');
+Insert into attributeType (attributeType_id, attributeType, description) values (605,'Location','Saints Hall');
+Insert into attributeType (attributeType_id, attributeType, description) values (606,'Location','KIPJ');
+Insert into attributeType (attributeType_id, attributeType, description) values (607,'Location','Maher');
+Insert into attributeType (attributeType_id, attributeType, description) values (608,'Location','Camino');
+Insert into attributeType (attributeType_id, attributeType, description) values (609,'Location','Founders');
+Insert into attributeType (attributeType_id, attributeType, description) values (609,'Location','Other/Unkown');
+
+Insert into attributeType (attributeType_id, attributeType, description) values (701,'Stickers','Yes');
+Insert into attributeType (attributeType_id, attributeType, description) values (702,'Stickers','No');
+
+Insert into attributeType (attributeType_id, attributeType, description) values (801,'Cap Type','Nozzle Lid');
+Insert into attributeType (attributeType_id, attributeType, description) values (802,'Cap Type','Straw Lid');
+Insert into attributeType (attributeType_id, attributeType, description) values (803,'Cap Type','Squirt Lid');
+Insert into attributeType (attributeType_id, attributeType, description) values (804,'Cap Type','Flat Screw On');
+
+
+-- Insert item attribute relationships 
+Insert into item_attribute(itemType_id, attributeType_id) values (1,101);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,102);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,103);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,104);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,105);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,106);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,107);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,108);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,109);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,110);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,111);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,112);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,113);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,114);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,115);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,116);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,117);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,118);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,119);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,120);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,121);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,122);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,123);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,141);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,142);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,143);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,201);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,202);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,203);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,204);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,205);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,206);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,207);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,208);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,209);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,210);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,211);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,212);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,213);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,214);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,215);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,216);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,217);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,501);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,502);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,503);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,504);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,505);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,509);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,301);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,302);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,303);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,304);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,305);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,306);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,307);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,601);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,602);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,603);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,604);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,605);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,606);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,607);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,608);
+Insert into item_attribute(itemType_id, attributeType_id) values (1,609);
+--Inserted all relationships for clothing 
+Insert into item_attribute(itemType_id, attributeType_id) values (2,124);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,125);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,126);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,127);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,128);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,129);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,130);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,131);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,201);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,202);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,203);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,204);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,205);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,206);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,207);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,208);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,209);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,210);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,211);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,212);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,213);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,214);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,215);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,216);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,217);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,506);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,507);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,508);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,509);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,601);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,602);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,603);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,604);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,605);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,606);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,607);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,608);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,609);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,701);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,702);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,801);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,802);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,803);
+Insert into item_attribute(itemType_id, attributeType_id) values (2,804);
+--Water Bottle relationships added above
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+Insert into item(item_id, location, notes, submitted_by_user, datefound, status) values (101,'USD', 'TK written on label', 'Bo Knows', '01/02/2022', 'false');
+
+insert into item_detail (item_id, itemType_id, attributeType_id) values (						101	,	1	,	22	);
+insert into item_detail (item_id, itemType_id, attributeType_id) values (						101	,	1	,	8	);
+insert into item_detail (item_id, itemType_id, attributeType_id) values (						101	,	1	,	1	);
+
+
+select item_id, itemType, attributeType, description, notes, location, dateFound, submitted_by_user from v_lost_item;
+
+SELECT * FROM item_attribute
