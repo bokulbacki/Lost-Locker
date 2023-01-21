@@ -345,6 +345,47 @@ Insert into item_attribute(itemType_id, attributeType_id) values (3,702);
 
 
 
+--Bag/backpack
+Insert into item_attribute(itemType_id, attributeType_id) values (4,101);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,106);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,111);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,112);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,115);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,117);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,140);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,141);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,142);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,143);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,201);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,202);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,203);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,204);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,205);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,206);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,207);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,208);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,209);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,210);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,211);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,212);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,213);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,214);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,215);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,216);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,217);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,601);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,602);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,603);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,604);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,605);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,606);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,607);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,608);
+Insert into item_attribute(itemType_id, attributeType_id) values (4,609);
+
+
+
+
 Insert into item_attribute(itemType_id, attributeType_id) values (5,201);
 Insert into item_attribute(itemType_id, attributeType_id) values (5,202);
 Insert into item_attribute(itemType_id, attributeType_id) values (5,203);
@@ -373,55 +414,3 @@ Insert into item_attribute(itemType_id, attributeType_id) values (5,608);
 Insert into item_attribute(itemType_id, attributeType_id) values (5,609);
 Insert into item_attribute(itemType_id, attributeType_id) values (5,701);
 Insert into item_attribute(itemType_id, attributeType_id) values (5,702);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-Insert into item(item_id, location, notes, submitted_by_user, datefound, status) values (101,'USD', 'TK written on label', 'Bo Knows', '01/02/2022', 'false');
-
-insert into item_detail (item_id, itemType_id, attributeType_id) values (						101	,	1	,	22	);
-insert into item_detail (item_id, itemType_id, attributeType_id) values (						101	,	1	,	8	);
-insert into item_detail (item_id, itemType_id, attributeType_id) values (						101	,	1	,	1	);
-
-
-select item_id, itemType, attributeType, description, notes, location, dateFound, submitted_by_user from v_lost_item;
-
-SELECT * FROM item_attribute
