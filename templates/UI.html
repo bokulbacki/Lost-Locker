@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://kit.fontawesome.com/c53de71673.js" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+        * {
+            list-style: none;
+            text-decoration: none;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+        }
+
+        body {
+            background: #f5f6fa;
+        }
+
+        .wrapper .sidebar {
+            background: #003b70;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 225px;
+            height: 100%;
+            padding: 20px 0;
+            transition: all 0.5s ease;
+            border: 1px solid #10558d;
+        }
+
+        .wrapper .sidebar .close-btn {
+            position: absolute;
+            color: #fff;
+            font-size: 20px;
+            right: 0px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .wrapper .sidebar .profile {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .wrapper .sidebar .profile img {
+            display: block;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            margin: 0 auto;
+        }
+
+        .wrapper .sidebar .profile h3 {
+            color: #ffffff;
+            margin: 10px 0 5px;
+            font-size: 18px;
+        }
+
+        .wrapper .sidebar ul li a .dropdown {
+            position: absolute;
+            right: 0;
+            margin: 3px;
+            transition: 0.3s ease;
+            font-size: 13px;
+
+        }
+
+        .wrapper .sidebar ul li .sub-item {
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+
+        }
+
+        .wrapper .sidebar ul li .sub-menu {
+            background: #f5f6fa;
+
+            display: none;
+        }
+
+        .wrapper .sidebar ul li .sub-menu a {
+            color: rgb(5, 68, 104);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            padding: 15px 30px;
+            position: relative;
+        }
+
+        #Home {
+            border-top: 1px solid #10558d;
+        }
+
+        .wrapper .sidebar ul li a {
+            display: block;
+            padding: 13px 30px;
+            border-bottom: 1px solid #10558d;
+            color: rgb(241, 237, 237);
+            font-size: 16px;
+            position: relative;
+        }
+
+        .wrapper .sidebar ul li a .icon {
+            color: #dee4ec;
+            width: 30px;
+            display: inline-block;
+        }
+
+        .wrapper .sidebar ul li a:hover,
+        .wrapper .sidebar ul li a.active {
+            color: #0c7db1;
+            background: white;
+            border-right: 2px solid rgb(5, 68, 104);
+        }
+
+        .wrapper .sidebar ul li a:hover .icon,
+        .wrapper .sidebar ul li a.active .icon {
+            color: #0c7db1;
+        }
+
+        .wrapper .sidebar ul li a:hover:before,
+        .wrapper .sidebar ul li a.active:before {
+            display: block;
+        }
+
+        .wrapper .section {
+            width: calc(100% - 225px);
+            margin-left: 225px;
+            transition: all 0.5s ease;
+        }
+
+        .wrapper .section .top_navbar {
+            background: #0074c8;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+
+        }
+
+        .wrapper .section .top_navbar .hamburger a {
+            font-size: 28px;
+            color: #f4fbff;
+            cursor: pointer;
+        }
+
+        .wrapper .section .top_navbar .hamburger a:hover {
+            color: #a2ecff;
+        }
+
+        body.active .wrapper .sidebar {
+            left: -225px;
+        }
+
+        body.active .wrapper .section {
+            margin-left: 0;
+            width: 100%;
+        }
+
+    </style>
+
+</head>
+
+<body class="active">
+
+    <div class="wrapper">
+        <div class="section">
+            <div class="top_navbar">
+                <div class="hamburger">
+                    <a href="#">
+                        <i class="fas fa-bars fa-sm"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        <div class="sidebar">
+            <header>
+                <div class="close-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+                <div class="profile">
+                    <img src="https://www.sandiego.edu/brand/images/logos/medallion/usd-logo-medallion-4c.png"
+                        alt="USD LOGO">
+                    <h3>USD Lost Locker</h3>
+                </div>
+            </header>
+
+            <ul>
+                <li>
+                    <a href="#" id="Home">
+                        <span class="icon"><i class="fa-solid fa-house"></i></span>
+                        <span class="item">Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="icon"><i class="fa-solid fa-box-archive"></i></span>
+                        <span class="item">My Items</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="Drop">
+                        <span class="icon">
+                            <i class="fa-solid fa-file-pen"></i></span>
+                        <span class="item">Submit A Claim<i class="fa-solid fa-chevron-right dropdown"></i></span> </a>
+                    <div class="sub-menu" style="display:none">
+                        <a href="{{ url_for('create') }}" class="sub-item">Lost Item Claim</a>
+                        <a href="{{ url_for('create') }}" class="sub-item">Found Item Claim</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <span class="item">Browse Items</span>
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
+    <script>
+        var hamburger = document.querySelector(".hamburger");
+        hamburger.addEventListener("click", function () {
+            document.querySelector("body").classList.toggle("active");
+            hamburger.style.display = "none";
+        })
+        var close = document.querySelector(".close-btn");
+        close.addEventListener("click", function () {
+            document.querySelector("body").classList.toggle("active");
+            hamburger.style.display = "block";
+        })
+
+        var dropdown = document.getElementById("Drop");
+        var drop = document.querySelector(".dropdown");
+        var sub = document.querySelector(".sub-menu")
+        var rot = 90;
+        dropdown.onclick = function () {
+            if (sub.style.display === "none") {
+                sub.style.display = "block";
+                drop.style = 'transform: rotate(' + rot + 'deg)';
+                rot -= 90;
+            } else {
+                sub.style.display = "none";
+                drop.style = 'transform: rotate(' + rot + 'deg)';
+                rot = 90
+            }
+        };
+
+    </script>
+
+</body>
+
+</html>
