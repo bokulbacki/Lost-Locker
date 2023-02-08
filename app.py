@@ -187,7 +187,37 @@ def create():
         return redirect(url_for('home'))
     return render_template('createItem.html')
         
+@app.route('/presentOptionsForLostItemClaim/', methods=('GET', 'POST'))
+def presentOptionsForLostItemClaim():
+    """
+    Assumptions:
+    - User is logged into LostLocker **
+    - User has lost an item around campus and hopes to find it
+    - They have chosen to create a lost item claim based on known information about it
 
+    1. User is presented with initial question
+        - Type of Item 
+            -Backend: 1-5 (clothing, bottle, backpack, device, etc) 
+    2. Using ItemType we present the full list of relevant attirubute types based on the item_attribute table
+        - Differetiate betweeen the different categories based on codes
+            1XX (Brand)
+            2XX (Colors)
+            4XX (model)
+            5XX (Size)
+            6XX (Location)
+            7XX (Stickers)
+            8XX (Cap Type)
+        - Ideally one dropdown button per applicable category (reference item_attribute table)
+    3. Gather all results and add them to the item_detail table using the original unique item_id
+    4. Complete the item table entry
+        fields:
+            - item_id     unique
+            - location (6XX) entry 
+            - notes ??
+            - submitted_by_user (automatic via logged in **)
+            - datefound (automatic? **)
+            - status (LOST)
+    """
         
        
         
