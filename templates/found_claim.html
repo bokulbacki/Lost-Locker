@@ -36,16 +36,19 @@ width: 500px;
   border-radius: 3px;
 }
 .heading{
-  background: #015a80;
+  background: #0c7db1;
   margin: -30px;
   text-align: center;
   color: white;
   font-size: 19px;
   margin-bottom: 35px;
-  padding: 10px;
-  
-  
+  padding: 20px;
 }
+
+.form_container .heading h2{
+    font-size: 18px;
+}
+
 .wrapper .form_container .form_item{
   margin-bottom: 25px;
 }
@@ -75,6 +78,7 @@ width: 500px;
   width: 100%;
   padding: 10px;
   font-size: 16px;
+  margin-bottom: 10px;
   border: 1px solid #dadce0;
   border-radius: 3px;
 }
@@ -84,10 +88,10 @@ width: 500px;
 }
 
 .btn button[type="submit"]{
-  margin: 50px auto 0;
-  background: #1598d4;
-  border: 1px solid #1598d4;
-  padding: 10px;
+  margin: 25px auto -25px;
+  background: #0c7db1;
+  border: 1px solid #0c7db1;
+  padding: 15px;
   width: 100%;
   font-size: 16px;
   letter-spacing: 1px;
@@ -108,13 +112,68 @@ width: 500px;
         <div class="heading">
         <h2>Found Item Claim</h2>
       </div>
-	  
+	  <!-- itemtype brand color size stickers location model clothingtype -->
 	  <div class="form_wrap select_box">
 		<div class="form_item">
 			<label>Item Type</label>
 			<select name="item_type" class="form-control">
 				<option value=""></option>
-                  <option value="Clothing" href="{{ url_for('clothing') }}">Clothing</option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Device">Device</option>
+                   <option value="Wallet">Wallet/Purse</option>
+                  <option value="Backpack">Backpack</option>
+                   <option value="Waterbottle">Waterbottle</option>
+                  <option value="Other">Other</option>
+			</select>
+
+            <label>Location Found</label>
+			<select name="item_type" class="form-control">
+				<option value=""></option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Device">Device</option>
+                   <option value="Wallet">Wallet/Purse</option>
+                  <option value="Backpack">Backpack</option>
+                   <option value="Waterbottle">Waterbottle</option>
+                  <option value="Other">Other</option>
+			</select>
+
+            <label>Brand</label>
+			<select name="item_type" class="form-control">
+				<option value=""></option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Device">Device</option>
+                   <option value="Wallet">Wallet/Purse</option>
+                  <option value="Backpack">Backpack</option>
+                   <option value="Waterbottle">Waterbottle</option>
+                  <option value="Other">Other</option>
+			</select>
+
+            <label>Color</label>
+			<select name="item_type" class="form-control">
+				<option value=""></option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Device">Device</option>
+                   <option value="Wallet">Wallet/Purse</option>
+                  <option value="Backpack">Backpack</option>
+                   <option value="Waterbottle">Waterbottle</option>
+                  <option value="Other">Other</option>
+			</select>
+
+            <label>Size</label>
+			<select name="item_type" class="form-control">
+				<option value=""></option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Device">Device</option>
+                   <option value="Wallet">Wallet/Purse</option>
+                  <option value="Backpack">Backpack</option>
+                   <option value="Waterbottle">Waterbottle</option>
+                  <option value="Other">Other</option>
+			</select>
+
+            <label>Stickers</label>
+			<select name="item_type" class="form-control">
+				<option value=""></option>
+                  <option value="Clothing">Clothing</option>
                   <option value="Device">Device</option>
                    <option value="Wallet">Wallet/Purse</option>
                   <option value="Backpack">Backpack</option>
