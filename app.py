@@ -2,7 +2,7 @@ import os
 import psycopg2
 import re
 from datetime import datetime
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, jsonify
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -29,6 +29,28 @@ def home():
     cur.close()
     conn.close()
     return render_template('UI.html', items=items)
+
+
+
+@app.route('/api/item-type')
+def ReturnJSON():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    data = cur.execute('SELECT * FROM itemtype')
+    items = cur.fetchall()
+    conn.close()
+    return jsonify(items)
+  
+
+@app.route('/api/clothing-types')
+def returnClothingTypes():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    data = cur.execute('SELECT description FROM itemtype')
+    items = cur.fetchall()
+    conn.close()
+    return jsonify(items)
+            
 
 
 

@@ -59,13 +59,93 @@
         {% block content %} {% endblock %}
     </div>
     <!-- jQuery CDN - Slim version (=without AJAX) -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <!-- Popper.JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
     <!-- Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
 
 
+
+        <script> 
+        $(document).ready(function() {
+
+            $('#attributes').hide();
+            let dropdown = $('#available-items');
+
+            dropdown.append('<option selected="true" disabled>Choose Item Type</option>');
+            dropdown.prop('selectedIndex', 0);
+            alert("hello");
+            //URL to get data from 
+            const url = 'http://127.0.0.1:5000/api/item-type';
+            
+            // Populate dropdown with list of provinces
+            $.getJSON(url, function (data) {
+                
+            
+            for (var i = 0; i < data.length; i++) {
+                // Access the values within the current array
+                var value1 = data[i][0];
+                var value2 = data[i][1];
+  
+                // Create an <option> element with the value and text set to the current values
+                var option = $("<option>").val(value1).text(value2);
+  
+                // Append the <option> element to the <select> element
+                dropdown.append(option);
+            }
+
+        })
+
+
+        $('#available-items').on('change', function() {
+            $('#attributes').show();
+
+            var previous = $("#available-items").val()
+
+            if (previous == 'Clothing') {
+                $('#clothing-types').removeClass('hidden');
+            } else {
+             $('#clothing-types').addClass('hidden');
+            }
+
+            
+
+
+    });   
+    
+
+    
+
+            let dropdown2 = $('#clothing-types');
+            alert(previous);
+            
+
+            dropdown2.append('<option selected="true" disabled>Choose Item Attributes</option>');
+            dropdown2.prop('selectedIndex', 0);
+            
+            //URL to get data from 
+            //const url2 = 'http://127.0.0.1:5000/api/item-attributes?itemtype=' +  $('#available-items').val();
+            
+           
+            // Populate dropdown with list of provinces
+   
+            //$.getJSON(url2, function (data2) {
+            // $.each(data2, function (key, item) {
+            //     dropdown2.append($('<option></option>').attr('value', item.attributetype).text(item.description));
+            //     console.log(item.description);
+    //         //     })
+    //         //});
+
+
+    //         });
+    
+
+
+
+
+        </script> 
 </body>
 
 </html>
