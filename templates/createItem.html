@@ -13,7 +13,7 @@
             <!--User chooses what type of item they lost -->
             <div>
               Please select an item:  
-              <select id="available-items" name="itemType"></select>
+              <select id="available-items" name="available-items" method="post"></select>
 
               
             </div>
@@ -21,10 +21,15 @@
 
             <div>
               Please select a type of clothing:  
-              <select id="clothing-types" name="itemType" style="display:none;"></select>
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
+              <select id="clothing-types" name="clothing-types" method="post"></select>
+             
+              
+            </div>
+
+            <div>
+              Please select a brand:  
+              <select id="brand" name="itemType" method="post"></select>
+             
               
             </div>
         
@@ -45,24 +50,5 @@
         </p>
     </form>
 
-    <script> function showDiv(prefix, chooser) {
-        var selectedOption = (chooser.options[chooser.selectedIndex].value);
-        if (selectedOption == "Clothing") {
-          var div = ClothingType
-          div.style.display = 'Block';
-          
-          var div2 = ClothingBrand
-          div2.style.display = 'Block';
-
-          var div3 = Color 
-          div3.style.display = 'Block'
-
-          
-
-        } else {
-          var div = document.getElementById(prefix + "2");
-          div.style.display = 'None';
-        }
-      }
-      </script>
+    
 {% endblock %}

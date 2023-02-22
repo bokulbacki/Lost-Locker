@@ -91,6 +91,7 @@
   
                 // Create an <option> element with the value and text set to the current values
                 var option = $("<option>").val(value1).text(value2);
+               
   
                 // Append the <option> element to the <select> element
                 dropdown.append(option);
@@ -100,46 +101,44 @@
 
 
         $('#available-items').on('change', function() {
-            $('#attributes').show();
-
+            
+            let dropdown2 = $('#clothing-types');
             var previous = $("#available-items").val()
+            alert(previous)
+            if (previous == 0) {
+                
+                //$('#clothing-types').style.display = 'block';
+                
 
-            if (previous == 'Clothing') {
-                $('#clothing-types').removeClass('hidden');
-            } else {
-             $('#clothing-types').addClass('hidden');
+                const url = 'http://127.0.0.1:5000/api/clothing-types';
+                const url = 'http://127.0.0.1:5000/api/brand';
+                // Populate dropdown with list of provinces
+                $.getJSON(url, function (data) {
+                
+            
+                    for (var i = 0; i < data.length; i++) {
+                    // Access the values within the current array
+                        var value1 = data[i][0];
+                        var value2 = data[i][1];
+  
+                    // Create an <option> element with the value and text set to the current values
+                        var option = $("<option>").val(value1).text(value2);
+               
+  
+                    // Append the <option> element to the <select> element
+                        dropdown2.append(option);
+                }
+            })
             }
 
-            
-
-
-    });   
-    
-
-    
-
-            let dropdown2 = $('#clothing-types');
-            alert(previous);
-            
-
-            dropdown2.append('<option selected="true" disabled>Choose Item Attributes</option>');
-            dropdown2.prop('selectedIndex', 0);
-            
-            //URL to get data from 
-            //const url2 = 'http://127.0.0.1:5000/api/item-attributes?itemtype=' +  $('#available-items').val();
-            
            
-            // Populate dropdown with list of provinces
-   
-            //$.getJSON(url2, function (data2) {
-            // $.each(data2, function (key, item) {
-            //     dropdown2.append($('<option></option>').attr('value', item.attributetype).text(item.description));
-            //     console.log(item.description);
-    //         //     })
-    //         //});
+            
 
+        
+    });   
+});
+    
 
-    //         });
     
 
 

@@ -87,7 +87,25 @@ def ReturnJSON():
 def returnClothingTypes():
     conn = get_db_connection()
     cur = conn.cursor()
-    data = cur.execute('SELECT description FROM itemtype')
+    
+    data = cur.execute('select attributetype_id,description from attributetype where attributetype=' + "'ClothingType'")
+    items = cur.fetchall()
+    conn.close()
+    return jsonify(items)
+
+
+#left off doing this function, we don't know how to grab the input from the form 
+# and use that in the new sql query to grab specific brands
+@app.route('/api/brand')
+def returnBrands():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    itemType = request.form['available-items']
+    
+    
+    print(itemType)
+    
+    #data = cur.execute('select ')
     items = cur.fetchall()
     conn.close()
     return jsonify(items)
@@ -248,7 +266,7 @@ def create():
         cur.close()
         conn.close()
         return redirect(url_for('home'))
-    return render_template('lost_claim.html')
+    return render_template('createitem.html')
         
 @app.route('/presentOptionsForLostItemClaim/', methods=('GET', 'POST'))
 def presentOptionsForLostItemClaim():
