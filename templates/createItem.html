@@ -12,7 +12,8 @@
 
             <!--User chooses what type of item they lost -->
             <div>
-              Please select an item:  
+              <label id="itemtype-label" for="dropdown"> Please select an item:  </label>
+              
               <select id="available-items" name="available-items" method="post"></select>
 
               
@@ -20,15 +21,33 @@
         
 
             <div>
-              Please select a type of clothing:  
+              <label id="clothing-label" for="dropdown" style="display:none;">Please select a type of clothing: </label>
+              
               <select id="clothing-types" name="clothing-types" method="post"></select>
              
               
             </div>
 
             <div>
-              Please select a brand:  
-              <select id="brand" name="itemType" method="post"></select>
+              <label id="brand-label" for="dropdown" >Please select a brand: </label>
+                
+              <select id="brands" name="size" method="post"></select>
+             
+              
+            </div>
+        
+            <div>
+              <label id="size-label" for="dropdown" >Please select a size: </label>
+                
+              <select id="size" name="size" method="post"></select>
+             
+              
+            </div>
+
+            <div>
+              <label id="location-label" for="dropdown" >Please select a location where item was lost if known: </label>
+                
+              <select id="location" name="location" method="post"></select>
              
               
             </div>

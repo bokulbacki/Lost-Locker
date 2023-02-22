@@ -83,12 +83,15 @@ def ReturnJSON():
     return jsonify(items)
   
 
-@app.route('/api/clothing-types')
+@app.route('/api/ClothingTypes')
 def returnClothingTypes():
+    var1=  request.args.get('var1')
+    var2 = request.args.get('var2')
     conn = get_db_connection()
     cur = conn.cursor()
-    
-    data = cur.execute('select attributetype_id,description from attributetype where attributetype=' + "'ClothingType'")
+    print("Var1 : " + var1)
+    print("Var2 : " + var2)
+    data = cur.execute('select i.itemtype_id, i.itemtype, a.attributetype_id, a.attributetype, a.description, ia.itemtype_id, ia.attributetype_id from itemtype i, item_attribute ia, attributetype a where i.itemtype_id = ia.itemtype_id and a.attributetype_id = ia.attributetype_id and i.itemtype_id =' + var1 + " and a.attributetype = '" + var2 + "'")
     items = cur.fetchall()
     conn.close()
     return jsonify(items)

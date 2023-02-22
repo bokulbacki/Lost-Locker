@@ -71,12 +71,12 @@
         <script> 
         $(document).ready(function() {
 
-            $('#attributes').hide();
+            $('#clothing-types').hide();
             let dropdown = $('#available-items');
 
             dropdown.append('<option selected="true" disabled>Choose Item Type</option>');
             dropdown.prop('selectedIndex', 0);
-            alert("hello");
+            
             //URL to get data from 
             const url = 'http://127.0.0.1:5000/api/item-type';
             
@@ -101,42 +101,184 @@
 
 
         $('#available-items').on('change', function() {
-            
-            let dropdown2 = $('#clothing-types');
-            var previous = $("#available-items").val()
+            previous = $('#available-items').val()
             alert(previous)
-            if (previous == 0) {
+            if (previous == 1){
+            $('#clothing-types, #clothing-label').show();
+            let dropdown = $('#clothing-types');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose Type</option>');
+            dropdown.prop('selectedIndex', 0);
+            var id = $("#available-items").val()
+            
+            
                 
-                //$('#clothing-types').style.display = 'block';
-                
-
-                const url = 'http://127.0.0.1:5000/api/clothing-types';
-                const url = 'http://127.0.0.1:5000/api/brand';
+              
+            
+                const url = 'http://127.0.0.1:5000/api/ClothingTypes?var1=' + id + '&var2=ClothingType';
+               
                 // Populate dropdown with list of provinces
                 $.getJSON(url, function (data) {
-                
+                    
             
                     for (var i = 0; i < data.length; i++) {
                     // Access the values within the current array
-                        var value1 = data[i][0];
-                        var value2 = data[i][1];
+                        var value1 = data[i][4];
+                        
   
                     // Create an <option> element with the value and text set to the current values
-                        var option = $("<option>").val(value1).text(value2);
+                        var option = $("<option>").val(value1).text(value1);
                
   
                     // Append the <option> element to the <select> element
-                        dropdown2.append(option);
+                        dropdown.append(option);
                 }
             })
+            
+
+                
+            
+
+           
+            
+        }
+        else { 
+            $('#clothing-types, #clothing-label').hide();
+        }
+        
+    });   
+    
+
+
+    $('#available-items').on('change', function() {
+            
+            let dropdown = $('#brands');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose Brand</option>');
+            dropdown.prop('selectedIndex', 0);
+            var id = $("#available-items").val()
+            //var previous = $("#clothing-types").val()
+            
+            
+                
+              
+            
+            const url = 'http://127.0.0.1:5000/api/ClothingTypes?var1=' + id + '&var2=Brand';
+            
+            // Populate dropdown with list of provinces
+            $.getJSON(url, function (data) {
+               
+        
+                for (var i = 0; i < data.length; i++) {
+                // Access the values within the current array
+                    var value1 = data[i][4];
+                    
+
+                // Create an <option> element with the value and text set to the current values
+                    var option = $("<option>").val(value1).text(value1);
+            
+
+                // Append the <option> element to the <select> element
+                    dropdown.append(option);
             }
+            })
+            
+
+                
+            
 
            
             
 
         
     });   
+
+    $('#available-items').on('change', function() {
+            
+            let dropdown = $('#size');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose Size</option>');
+            dropdown.prop('selectedIndex', 0);
+            var id = $("#available-items").val()
+            //var previous = $("#clothing-types").val()
+            
+            
+                
+              
+            
+            const url = 'http://127.0.0.1:5000/api/ClothingTypes?var1=' + id + '&var2=Size';
+            
+            // Populate dropdown with list of provinces
+            $.getJSON(url, function (data) {
+               
+                for (var i = 0; i < data.length; i++) {
+                // Access the values within the current array
+                    var value1 = data[i][4];
+                    
+
+                // Create an <option> element with the value and text set to the current values
+                    var option = $("<option>").val(value1).text(value1);
+            
+
+                // Append the <option> element to the <select> element
+                    dropdown.append(option);
+            }
+            })
+            
+
+                
+            
+
+           
+            
+
+        
+    });   
+    $('#available-items').on('change', function() {
+            
+            let dropdown = $('#location');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose Location</option>');
+            dropdown.prop('selectedIndex', 0);
+            var id = $("#available-items").val()
+            //var previous = $("#clothing-types").val()
+            
+            
+                
+              
+            
+            const url = 'http://127.0.0.1:5000/api/ClothingTypes?var1=' + id + '&var2=Location';
+            
+            // Populate dropdown with list of provinces
+            $.getJSON(url, function (data) {
+               
+        
+                for (var i = 0; i < data.length; i++) {
+                // Access the values within the current array
+                    var value1 = data[i][4];
+                    
+
+                // Create an <option> element with the value and text set to the current values
+                    var option = $("<option>").val(value1).text(value1);
+            
+
+                // Append the <option> element to the <select> element
+                    dropdown.append(option);
+            }
+            })
+            
+
+                
+            
+
+           
+            
+
+        
+    });   
+
 });
+
     
 
     

@@ -68,11 +68,11 @@ WHERE
 
 
 -- Inset item types
-Insert into itemType (itemType_id, itemType) values (0,'Clothing');
-Insert into itemType (itemType_id, itemType) values (1,'Bottle');
-Insert into itemType (itemType_id, itemType) values (2,'Device');
-Insert into itemType (itemType_id, itemType) values (3,'Backpack/Bag/Purse');
-Insert into itemType (itemType_id, itemType) values (4,'Book');
+Insert into itemType (itemType_id, itemType) values (1,'Clothing');
+Insert into itemType (itemType_id, itemType) values (2,'Bottle');
+Insert into itemType (itemType_id, itemType) values (3,'Device');
+Insert into itemType (itemType_id, itemType) values (4,'Backpack/Bag/Purse');
+Insert into itemType (itemType_id, itemType) values (5,'Book');
 
 -- Insert item attributes
 
