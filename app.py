@@ -30,7 +30,48 @@ def home():
     conn.close()
     return render_template('UI.html', items=items)
 
+@app.route("/clothingClaim/", methods=('GET', 'POST'))
+def clothing():
+    return render_template('clothing_claim.html')
 
+@app.route("/browse/")
+def browse():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM item;')
+    items = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('browse.html', items=items)
+
+@app.route('/foundItem/', methods=('GET', 'POST'))
+def found():
+    if request.method == 'POST':
+
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        print(request.form)
+
+        
+        item = None
+        clothing_type = None
+        brand = None
+        color = None
+        location = "library"
+        status = "lost"
+
+
+        if request.form['item_type'] == "Clothing":
+            print("entered")
+            item = "Clothing"
+            return render_template('clothing_claim.html')
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+    return render_template('found_claim.html')
 
 @app.route('/api/item-type')
 def ReturnJSON():
@@ -207,7 +248,7 @@ def create():
         cur.close()
         conn.close()
         return redirect(url_for('home'))
-    return render_template('createItem.html')
+    return render_template('lost_claim.html')
         
 @app.route('/presentOptionsForLostItemClaim/', methods=('GET', 'POST'))
 def presentOptionsForLostItemClaim():

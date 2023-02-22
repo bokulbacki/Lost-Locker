@@ -1,0 +1,197 @@
+{% extends 'UI.html' %}
+
+{% block content %}
+<head>
+ 
+  
+  <title>Document</title>
+ 
+  <style>
+ 
+
+*{
+	list-style: none;
+            text-decoration: none;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+}
+
+body{
+      height: 100vh;
+      background: #e1edf9;
+}
+
+
+
+.wrapper .form_container{
+width: 500px;
+  margin: 50px auto 0;
+  background: #fff;
+  padding: 30px;
+  box-shadow: 1px 1px 15px rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+.heading{
+  background: #0c7db1;
+  margin: -30px;
+  text-align: center;
+  color: white;
+  font-size: 19px;
+  margin-bottom: 35px;
+  padding: 20px;
+}
+
+.form_container .heading h2{
+    font-size: 18px;
+}
+
+.wrapper .form_container .form_item{
+  margin-bottom: 25px;
+}
+
+.form_wrap.fullname,
+.form_wrap.select_box{
+  display: flex;
+}
+
+.form_wrap.fullname .form_item,
+.form_wrap.select_box .form_item{
+  width: 100%;
+}
+
+.form_wrap.fullname .form_item:first-child,
+.form_wrap.select_box .form_item:first-child{
+  margin-right: 4%;
+}
+
+.wrapper .form_container .form_item label{
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form_item button[type="text"],
+.form_item select{
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 10px;
+  border: 1px solid #dadce0;
+  border-radius: 3px;
+}
+
+.form_item button[type="text"]:focus{
+  border-color: #6271f0;
+}
+
+.btn button[type="submit"]{
+  margin: 25px auto -25px;
+  background: #0c7db1;
+  border: 1px solid #0c7db1;
+  padding: 15px;
+  width: 100%;
+  font-size: 16px;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #fff;
+}
+  </style>
+</head>
+<form method="post">
+<body>
+ 
+	<div class="wrapper">
+
+		
+		<div class="form_container">
+		  <form name="form">
+        <div class="heading">
+        <h2>Found Item Claim</h2>
+      </div>
+	  <!-- itemtype brand color size stickers location model clothingtype -->
+	  <div class="form_wrap select_box">
+		<div class="form_item">
+			<label>Item Type</label>
+			<select name="item_type" class="form-control">
+				<option value=""></option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Device">Device</option>
+                   <option value="Wallet">Wallet/Purse</option>
+                  <option value="Backpack">Backpack</option>
+                   <option value="Waterbottle">Waterbottle</option>
+                  <option value="Other">Other</option>
+			</select>
+
+            <label>Location Found</label>
+			<select name="item_type" class="form-control">
+				<option value=""></option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Device">Device</option>
+                   <option value="Wallet">Wallet/Purse</option>
+                  <option value="Backpack">Backpack</option>
+                   <option value="Waterbottle">Waterbottle</option>
+                  <option value="Other">Other</option>
+			</select>
+
+            <label>Brand</label>
+			<select name="item_type" class="form-control">
+				<option value=""></option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Device">Device</option>
+                   <option value="Wallet">Wallet/Purse</option>
+                  <option value="Backpack">Backpack</option>
+                   <option value="Waterbottle">Waterbottle</option>
+                  <option value="Other">Other</option>
+			</select>
+
+            <label>Color</label>
+			<select name="item_type" class="form-control">
+				<option value=""></option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Device">Device</option>
+                   <option value="Wallet">Wallet/Purse</option>
+                  <option value="Backpack">Backpack</option>
+                   <option value="Waterbottle">Waterbottle</option>
+                  <option value="Other">Other</option>
+			</select>
+
+            <label>Size</label>
+			<select name="item_type" class="form-control">
+				<option value=""></option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Device">Device</option>
+                   <option value="Wallet">Wallet/Purse</option>
+                  <option value="Backpack">Backpack</option>
+                   <option value="Waterbottle">Waterbottle</option>
+                  <option value="Other">Other</option>
+			</select>
+
+            <label>Stickers</label>
+			<select name="item_type" class="form-control">
+				<option value=""></option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Device">Device</option>
+                   <option value="Wallet">Wallet/Purse</option>
+                  <option value="Backpack">Backpack</option>
+                   <option value="Waterbottle">Waterbottle</option>
+                  <option value="Other">Other</option>
+			</select>
+			
+			
+				
+
+			<div class="btn">
+				<button type="submit">Submit</button>
+			</div>
+		  </form>
+		</div>
+	  </div>
+  
+</body>
+</form>
+</html>
+{% endblock %}

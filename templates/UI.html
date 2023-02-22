@@ -22,7 +22,9 @@
         }
 
         body {
-            background: #f5f6fa;
+            background-image: url("https://www.sandiego.edu/mysandiego/portal/img/USD-Dome.jpg");
+            background-position: bottom;
+            background-size: cover;
         }
 
         .wrapper .sidebar {
@@ -137,7 +139,7 @@
         }
 
         .wrapper .section .top_navbar {
-            background: #0074c8;
+            background: #003b70;
             height: 50px;
             display: flex;
             align-items: center;
@@ -195,7 +197,7 @@
 
             <ul>
                 <li>
-                    <a href="#" id="Home">
+                    <a href="{{ url_for('home') }}" id="Home">
                         <span class="icon"><i class="fa-solid fa-house"></i></span>
                         <span class="item">Home</span>
                     </a>
@@ -212,12 +214,12 @@
                             <i class="fa-solid fa-file-pen"></i></span>
                         <span class="item">Submit A Claim<i class="fa-solid fa-chevron-right dropdown"></i></span> </a>
                     <div class="sub-menu" style="display:none">
-                        <a href="{{ url_for('create') }}" class="sub-item">Lost Item Claim</a>
-                        <a href="{{ url_for('create') }}" class="sub-item">Found Item Claim</a>
+                        <a href="{{ url_for('lost') }}" class="sub-item">Lost Item Claim</a>
+                        <a href="{{ url_for('found') }}" class="sub-item">Found Item Claim</a>
                     </div>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="{{ url_for('browse') }}">
                         <span class="icon"><i class="fa-solid fa-magnifying-glass"></i></span>
                         <span class="item">Browse Items</span>
                     </a>
@@ -226,6 +228,8 @@
 
         </div>
     </div>
+
+    {% block content %} {% endblock %}
 
     <script>
         var hamburger = document.querySelector(".hamburger");
