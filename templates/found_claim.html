@@ -102,7 +102,7 @@ width: 500px;
 }
   </style>
 </head>
-<form method="post">
+<form id="newClaim" method="post">
 <body>
  
 	<div class="wrapper">
@@ -116,7 +116,7 @@ width: 500px;
     <div class="form_item">
       <label id="itemtype-label" for="dropdown"> Please select an item:  </label>
       
-      <select id="available-items" name="available-items" method="post"></select>
+      <select id="available-items" name="available-items" ></select>
 
       
     
@@ -125,7 +125,7 @@ width: 500px;
     
       <label id="clothing-label" for="dropdown" style="display:none;">Please select a type of clothing: </label>
       
-      <select id="clothing-types" name="clothing-types" method="post" style="display:none;"></select>
+      <select id="clothing-types" name="clothing-types"  style="display:none;"></select>
      
       
    
@@ -133,7 +133,7 @@ width: 500px;
    
       <label id="brand-label" for="dropdown" style="display:none;">Please select a brand: </label>
         
-      <select id="brands" name="size" method="post" style="display:none;"></select>
+      <select id="brands" name="brands" style="display:none;"></select>
      
       
    
@@ -141,7 +141,9 @@ width: 500px;
    
       <label id="model-label" for="dropdown" style="display:none;">Please select device model: </label>
         
-      <select id="models" name="models" method="post" style="display:none;"></select>
+      <select id="models" name="models"  style="display:none;"></select>
+      
+        
       
      
       
@@ -150,7 +152,7 @@ width: 500px;
     
       <label id="color-label" for="dropdown" style="display:none;">Please select a color: </label>
         
-      <select id="color" name="color" method="post" style="display:none;"></select>
+      <select id="color" name="color"  style="display:none;"></select>
      
       
    
@@ -158,7 +160,7 @@ width: 500px;
     
       <label id="size-label" for="dropdown" style="display:none;" >Please select a size: </label>
         
-      <select id="size" name="size" method="post" style="display:none;"></select>
+      <select id="size" name="size" style="display:none;"></select>
      
       
     
@@ -166,7 +168,7 @@ width: 500px;
    
       <label id="stickers-label" for="dropdown" style="display:none;">Were there any stickers on your waterbottle?: </label>
         
-      <select id="stickers" name="stickers" method="post" style="display:none;"></select>
+      <select id="stickers" name="stickers"  style="display:none;"></select>
       
      
       
@@ -174,20 +176,21 @@ width: 500px;
 
     
       <label id="book-label" for="book" style="display:none;">What was the title of your book?: </label>
-      <input type="text" id="book" name="book" method="post" style="display:none;">
+      <input type="text" id="book" name="book"  style="display:none;">
    
 
 
     
       <label id="location-label" for="dropdown"  style="display:none;">Please select a location where item was lost if known: </label>
         
-      <select id="location" name="location" method="post" style="display:none;"></select>
+      <select id="location" name="location"  style="display:none;"></select>
 
       <input type="submit" value="Submit">
      
    
 
   </form>
+  <div id="error-msg" style="display: none; color: red;">Please select a value for all dropdowns.</div>
     
 		
 	  </div> 
@@ -235,11 +238,11 @@ width: 500px;
 
         $('#available-items').on('change', function() {
             previous = $('#available-items').val()
-            
+            let dropdown = $('#clothing-types');
             if (previous == 1){
             $('#clothing-types, #clothing-label').show();
 
-            let dropdown = $('#clothing-types');
+            
             dropdown.empty();
             dropdown.append('<option selected="true" disabled>Choose Type</option>');
             dropdown.prop('selectedIndex', 0);
@@ -271,6 +274,9 @@ width: 500px;
         }
         else { 
             $('#clothing-types, #clothing-label').hide();
+            var blank = ''
+            dropdown.append('<option value="' + blank + '">' + blank + '</option>');
+            dropdown.val(blank);
         }
         
     });   
@@ -317,13 +323,15 @@ width: 500px;
 
     $('#available-items').on('change', function() {
             previous = $('#available-items').val()
+            let dropdown = $('#models');
             
+
             if (previous == 3){
             $('#models, #model-label').show();
 
-            let dropdown = $('#models');
+            
             dropdown.empty();
-            dropdown.append('<option selected="true" disabled>Choose Model</option>');
+            dropdown.append('<option value = "" selected>Choose Model</option>');
             dropdown.prop('selectedIndex', 0);
             var id = $("#available-items").val()
             
@@ -356,6 +364,13 @@ width: 500px;
         }
         else { 
             $('#models, #model-label').hide();
+
+            var blank = ""
+            dropdown.append('<option value="' + blank + '">' + blank + '</option>');
+            dropdown.val(blank);
+            alert("entereed models")
+            alert(dropdown.val())
+            
         }
         
     });   
@@ -364,8 +379,11 @@ width: 500px;
             
             let dropdown = $('#color');
             dropdown.empty();
-            dropdown.append('<option selected="true" disabled>Choose Color</option>');
+            var blank = ''
+            dropdown.append('<option value="' + blank + '">Choose a color</option>');
+            dropdown.val(blank);
             dropdown.prop('selectedIndex', 0);
+            
             var id = $("#available-items").val()
             
              
@@ -397,11 +415,11 @@ width: 500px;
     $('#available-items').on('change', function() {
             
         previous = $('#available-items').val()
-            
+        let dropdown = $('#size');
             if (previous == 1 | previous == 2){
             $('#size, #size-label').show();
 
-            let dropdown = $('#size');
+            
             dropdown.empty();
             dropdown.append('<option selected="true" disabled>Choose Size</option>');
             dropdown.prop('selectedIndex', 0);
@@ -431,6 +449,9 @@ width: 500px;
         }
         else { 
             $('#size, #size-label').hide();
+            var blank = ''
+            dropdown.append('<option value="' + blank + '">' + blank + '</option>');
+            dropdown.val(blank);
         }
                 
      
@@ -438,11 +459,11 @@ width: 500px;
 
     $('#available-items').on('change', function() {
             previous = $('#available-items').val()
-            
+            let dropdown = $('#stickers');
             if (previous == 2){
             $('#stickers, #stickers-label').show();
 
-            let dropdown = $('#stickers');
+            
             dropdown.empty();
             dropdown.append('<option selected="true" disabled>Choose Type</option>');
             dropdown.prop('selectedIndex', 0);
@@ -452,6 +473,9 @@ width: 500px;
         }
         else { 
             $('#stickers, #stickers-label').hide();
+            var blank = ''
+            dropdown.append('<option value="' + blank + '">' + blank + '</option>');
+            dropdown.val(blank);
         }
         
     });   
@@ -470,6 +494,7 @@ width: 500px;
             $('#book, #book-label').hide();
             $('#brands, #brand-label').show();
             $('#color, #color-label').show();
+           
         }
         
     });   
@@ -504,6 +529,48 @@ width: 500px;
             
         
     });   
+    $('#newClaim').submit(function(event) {
+        alert("entered");
+        var itemType = $('#available-items');
+        var itemTypeVal = itemType.val();
+        var clothingType = $('#clothing-types');
+        var clothingTypeVal = clothingType.val();
+        var brands = $('#brands');
+        var brandsVal = brands.val();
+        var models = $('#models');
+        var modelsVal = models.val();
+        var color = $('#color');
+        var colorVal = color.val();
+        var size = $('#size');
+        var sizeVal = size.val();
+        var stickers = $('#stickers');
+        var stickersVal = stickers.val();
+        var location = $('#location');
+        var locationVal = location.val();
+
+        if (itemTypeVal === null || itemTypeVal === undefined ||
+        clothingTypeVal === null || clothingTypeVal === undefined ||
+        brandsVal === null || brandsVal === undefined ||
+        modelsVal === null || modelsVal === undefined ||
+        colorVal === null || colorVal === undefined ||
+        sizeVal === null || sizeVal === undefined ||
+        stickersVal === null || stickersVal === undefined ||
+        locationVal === null || locationVal === undefined) {
+            event.preventDefault();
+            
+            console.log('Error: One or more fields are empty');
+            if(!itemTypeVal) console.log('itemTypeVal is empty');
+            if(!clothingTypeVal) console.log('clothingTypeVal is empty');
+            if(!brandsVal) console.log('brandsVal is empty');
+            if(!modelsVal) console.log('modelsVal is empty');
+            if(!colorVal) console.log('colorVal is empty');
+            if(!sizeVal) console.log('sizeVal is empty');
+            if(!stickersVal) console.log('stickersVal is empty');
+            if(!locationVal) console.log('locationVal is empty');
+
+            $('#error-msg').show();
+        }
+});
 
 });
 

@@ -45,8 +45,12 @@ def lostitem():
 
 @app.route('/foundItem/', methods=('GET', 'POST'))
 def founditem():
-    
-    return render_template('found_claim.html')
+    if request.method == 'POST':
+        process()
+        return render_template('found_claim.html')
+    else:
+
+        return render_template('found_claim.html')
 
 @app.route('/api/item-type')
 def ReturnJSON():
@@ -72,6 +76,27 @@ def returnAttributes():
     return jsonify(items)
 
 
+def process():
+    itemType = request.form['available-items']
+    print("item: " + itemType)
+    clothingType = request.form['clothing-types']
+    print("clothingtype: " + clothingType)
+    brand = request.form['brands']
+    print("brand: " + brand)
+    model = request.form['models']
+    print("model: " + model)
+    color = request.form['color']
+    print("color: " + color)
+    size = request.form['size']
+    print(size)
+    stickers = request.form['stickers']
+    print("stickers: " +stickers)
+    book = request.form['book']
+    print("book: " + book)
+    location = request.form['location']
+    print("location: " + location)
+
+    
 
 
 
