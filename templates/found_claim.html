@@ -53,25 +53,26 @@ width: 500px;
   margin-bottom: 25px;
 }
 
-.form_wrap.fullname,
-.form_wrap.select_box{
+/* .form_wrap.fullname{
   display: flex;
-}
+} */
 
 .form_wrap.fullname .form_item,
-.form_wrap.select_box .form_item{
+.form_item{
   width: 100%;
 }
 
 .form_wrap.fullname .form_item:first-child,
-.form_wrap.select_box .form_item:first-child{
+.form_item:first-child{
   margin-right: 4%;
 }
 
-.wrapper .form_container .form_item label{
-  display: block;
+/* .wrapper .form_container .form_item label{
+  display: flex;
   margin-bottom: 5px;
-}
+} */
+
+
 
 .form_item button[type="text"],
 .form_item select{
@@ -105,92 +106,410 @@ width: 500px;
 <body>
  
 	<div class="wrapper">
-
-		
-		<div class="form_container">
-		  <form name="form">
+    <div class="form_container">
+      <form name ="form">
         <div class="heading">
-        <h2>Found Item Claim</h2>
-      </div>
-	  <!-- itemtype brand color size stickers location model clothingtype -->
-	  <div class="form_wrap select_box">
-		<div class="form_item">
-			<label>Item Type</label>
-			<select name="item_type" class="form-control">
-				<option value=""></option>
-                  <option value="Clothing">Clothing</option>
-                  <option value="Device">Device</option>
-                   <option value="Wallet">Wallet/Purse</option>
-                  <option value="Backpack">Backpack</option>
-                   <option value="Waterbottle">Waterbottle</option>
-                  <option value="Other">Other</option>
-			</select>
+          <h2>Found Item Claim</h2>
 
-            <label>Location Found</label>
-			<select name="item_type" class="form-control">
-				<option value=""></option>
-                  <option value="Clothing">Clothing</option>
-                  <option value="Device">Device</option>
-                   <option value="Wallet">Wallet/Purse</option>
-                  <option value="Backpack">Backpack</option>
-                   <option value="Waterbottle">Waterbottle</option>
-                  <option value="Other">Other</option>
-			</select>
+    </div>
+    
+    <div class="form_item">
+      <label id="itemtype-label" for="dropdown"> Please select an item:  </label>
+      
+      <select id="available-items" name="available-items" method="post"></select>
 
-            <label>Brand</label>
-			<select name="item_type" class="form-control">
-				<option value=""></option>
-                  <option value="Clothing">Clothing</option>
-                  <option value="Device">Device</option>
-                   <option value="Wallet">Wallet/Purse</option>
-                  <option value="Backpack">Backpack</option>
-                   <option value="Waterbottle">Waterbottle</option>
-                  <option value="Other">Other</option>
-			</select>
+      
+    
 
-            <label>Color</label>
-			<select name="item_type" class="form-control">
-				<option value=""></option>
-                  <option value="Clothing">Clothing</option>
-                  <option value="Device">Device</option>
-                   <option value="Wallet">Wallet/Purse</option>
-                  <option value="Backpack">Backpack</option>
-                   <option value="Waterbottle">Waterbottle</option>
-                  <option value="Other">Other</option>
-			</select>
 
-            <label>Size</label>
-			<select name="item_type" class="form-control">
-				<option value=""></option>
-                  <option value="Clothing">Clothing</option>
-                  <option value="Device">Device</option>
-                   <option value="Wallet">Wallet/Purse</option>
-                  <option value="Backpack">Backpack</option>
-                   <option value="Waterbottle">Waterbottle</option>
-                  <option value="Other">Other</option>
-			</select>
+    
+      <label id="clothing-label" for="dropdown" style="display:none;">Please select a type of clothing: </label>
+      
+      <select id="clothing-types" name="clothing-types" method="post" style="display:none;"></select>
+     
+      
+   
 
-            <label>Stickers</label>
-			<select name="item_type" class="form-control">
-				<option value=""></option>
-                  <option value="Clothing">Clothing</option>
-                  <option value="Device">Device</option>
-                   <option value="Wallet">Wallet/Purse</option>
-                  <option value="Backpack">Backpack</option>
-                   <option value="Waterbottle">Waterbottle</option>
-                  <option value="Other">Other</option>
-			</select>
-			
-			
-				
+   
+      <label id="brand-label" for="dropdown" style="display:none;">Please select a brand: </label>
+        
+      <select id="brands" name="size" method="post" style="display:none;"></select>
+     
+      
+   
 
-			<div class="btn">
-				<button type="submit">Submit</button>
-			</div>
-		  </form>
-		</div>
-	  </div>
+   
+      <label id="model-label" for="dropdown" style="display:none;">Please select device model: </label>
+        
+      <select id="models" name="models" method="post" style="display:none;"></select>
+      
+     
+      
+    
+
+    
+      <label id="color-label" for="dropdown" style="display:none;">Please select a color: </label>
+        
+      <select id="color" name="color" method="post" style="display:none;"></select>
+     
+      
+   
+
+    
+      <label id="size-label" for="dropdown" style="display:none;" >Please select a size: </label>
+        
+      <select id="size" name="size" method="post" style="display:none;"></select>
+     
+      
+    
+
+   
+      <label id="stickers-label" for="dropdown" style="display:none;">Were there any stickers on your waterbottle?: </label>
+        
+      <select id="stickers" name="stickers" method="post" style="display:none;"></select>
+      
+     
+      
+    
+
+    
+      <label id="book-label" for="book" style="display:none;">What was the title of your book?: </label>
+      <input type="text" id="book" name="book" method="post" style="display:none;">
+   
+
+
+    
+      <label id="location-label" for="dropdown"  style="display:none;">Please select a location where item was lost if known: </label>
+        
+      <select id="location" name="location" method="post" style="display:none;"></select>
+
+      <input type="submit" value="Submit">
+     
+   
+
+  </form>
+    
+		
+	  </div> 
+  <!-- jQuery CDN - Slim version (=without AJAX) -->
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <!-- Popper.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+
+
+
+        <script> 
+        $(document).ready(function() {
+
+            $('#clothing-types').hide();
+            let dropdown = $('#available-items');
+
+            dropdown.append('<option selected="true" disabled>Choose Item Type</option>');
+            dropdown.prop('selectedIndex', 0);
+            
+            //URL to get data from 
+            const url = 'http://127.0.0.1:5000/api/item-type';
+            
+            // Populate dropdown with list of provinces
+            $.getJSON(url, function (data) {
+                
+            
+            for (var i = 0; i < data.length; i++) {
+                // Access the values within the current array
+                var value1 = data[i][0];
+                var value2 = data[i][1];
   
+                // Create an <option> element with the value and text set to the current values
+                var option = $("<option>").val(value1).text(value2);
+               
+  
+                // Append the <option> element to the <select> element
+                dropdown.append(option);
+            }
+
+        })
+
+
+        $('#available-items').on('change', function() {
+            previous = $('#available-items').val()
+            
+            if (previous == 1){
+            $('#clothing-types, #clothing-label').show();
+
+            let dropdown = $('#clothing-types');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose Type</option>');
+            dropdown.prop('selectedIndex', 0);
+            var id = $("#available-items").val()
+            
+            
+                
+                const url = 'http://127.0.0.1:5000/api/returnAttributes?var1=' + id + '&var2=ClothingType';
+               
+                // Populate dropdown with list of provinces
+                $.getJSON(url, function (data) {
+                    
+            
+                    for (var i = 0; i < data.length; i++) {
+                    // Access the values within the current array
+                        var value1 = data[i][4];    
+  
+                    // Create an <option> element with the value and text set to the current values
+                        var option = $("<option>").val(value1).text(value1);
+               
+  
+                    // Append the <option> element to the <select> element
+                        dropdown.append(option);
+                }
+            })
+            
+     
+            
+        }
+        else { 
+            $('#clothing-types, #clothing-label').hide();
+        }
+        
+    });   
+    
+
+
+    $('#available-items').on('change', function() {
+            
+            let dropdown = $('#brands');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose Brand</option>');
+            dropdown.prop('selectedIndex', 0);
+            var id = $("#available-items").val()
+            //var previous = $("#clothing-types").val()
+            
+            
+                
+              
+            
+            const url = 'http://127.0.0.1:5000/api/returnAttributes?var1=' + id + '&var2=Brand';
+            
+            // Populate dropdown with list of provinces
+            $.getJSON(url, function (data) {
+               
+        
+                for (var i = 0; i < data.length; i++) {
+                // Access the values within the current array
+                    var value1 = data[i][4];
+                    
+
+                // Create an <option> element with the value and text set to the current values
+                    var option = $("<option>").val(value1).text(value1);
+            
+
+                // Append the <option> element to the <select> element
+                    dropdown.append(option);
+            }
+            })
+            
+
+       
+        
+    });   
+
+    $('#available-items').on('change', function() {
+            previous = $('#available-items').val()
+            
+            if (previous == 3){
+            $('#models, #model-label').show();
+
+            let dropdown = $('#models');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose Model</option>');
+            dropdown.prop('selectedIndex', 0);
+            var id = $("#available-items").val()
+            
+            
+                
+              
+            
+                const url = 'http://127.0.0.1:5000/api/returnAttributes?var1=' + id + '&var2=Model';
+               
+                // Populate dropdown with list of provinces
+                $.getJSON(url, function (data) {
+                    
+            
+                    for (var i = 0; i < data.length; i++) {
+                    // Access the values within the current array
+                        var value1 = data[i][4];
+                        
+  
+                    // Create an <option> element with the value and text set to the current values
+                        var option = $("<option>").val(value1).text(value1);
+               
+  
+                    // Append the <option> element to the <select> element
+                        dropdown.append(option);
+                }
+            })
+            
+     
+            
+        }
+        else { 
+            $('#models, #model-label').hide();
+        }
+        
+    });   
+
+    $('#available-items').on('change', function() {
+            
+            let dropdown = $('#color');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose Color</option>');
+            dropdown.prop('selectedIndex', 0);
+            var id = $("#available-items").val()
+            
+             
+            
+            const url = 'http://127.0.0.1:5000/api/returnAttributes?var1=' + id + '&var2=Color';
+            
+            // Populate dropdown with list of provinces
+            $.getJSON(url, function (data) {
+               
+        
+                for (var i = 0; i < data.length; i++) {
+                // Access the values within the current array
+                    var value1 = data[i][4];
+                    
+
+                // Create an <option> element with the value and text set to the current values
+                    var option = $("<option>").val(value1).text(value1);
+            
+
+                // Append the <option> element to the <select> element
+                    dropdown.append(option);
+            }
+            })
+            
+
+        
+    });   
+
+    $('#available-items').on('change', function() {
+            
+        previous = $('#available-items').val()
+            
+            if (previous == 1 | previous == 2){
+            $('#size, #size-label').show();
+
+            let dropdown = $('#size');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose Size</option>');
+            dropdown.prop('selectedIndex', 0);
+            var id = $("#available-items").val()
+            //var previous = $("#clothing-types").val()
+            
+          
+            const url = 'http://127.0.0.1:5000/api/returnAttributes?var1=' + id + '&var2=Size';
+            
+            // Populate dropdown with list of provinces
+            $.getJSON(url, function (data) {
+               
+                for (var i = 0; i < data.length; i++) {
+                // Access the values within the current array
+                    var value1 = data[i][4];
+                    
+
+                // Create an <option> element with the value and text set to the current values
+                    var option = $("<option>").val(value1).text(value1);
+            
+
+                // Append the <option> element to the <select> element
+                    dropdown.append(option);
+            }
+            })
+            
+        }
+        else { 
+            $('#size, #size-label').hide();
+        }
+                
+     
+    });   
+
+    $('#available-items').on('change', function() {
+            previous = $('#available-items').val()
+            
+            if (previous == 2){
+            $('#stickers, #stickers-label').show();
+
+            let dropdown = $('#stickers');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose Type</option>');
+            dropdown.prop('selectedIndex', 0);
+            dropdown.append('<option> Yes </option>');
+            dropdown.append('<option> No </option>');
+     
+        }
+        else { 
+            $('#stickers, #stickers-label').hide();
+        }
+        
+    });   
+
+
+    $('#available-items').on('change', function() {
+            previous = $('#available-items').val()
+            
+            if (previous == 5){
+            $('#book, #book-label').show();
+            $('#brands, #brand-label').hide();
+            $('#color, #color-label').hide();    
+        }
+        else { 
+            
+            $('#book, #book-label').hide();
+            $('#brands, #brand-label').show();
+            $('#color, #color-label').show();
+        }
+        
+    });   
+    
+    $('#available-items').on('change', function() {
+      $('#location, #location-label').show();
+            let dropdown = $('#location');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose Location</option>');
+            dropdown.prop('selectedIndex', 0);
+            var id = $("#available-items").val()
+        
+            const url = 'http://127.0.0.1:5000/api/returnAttributes?var1=' + id + '&var2=Location';
+            
+            // Populate dropdown with list of provinces
+            $.getJSON(url, function (data) {
+               
+        
+                for (var i = 0; i < data.length; i++) {
+                // Access the values within the current array
+                    var value1 = data[i][4];
+                    
+
+                // Create an <option> element with the value and text set to the current values
+                    var option = $("<option>").val(value1).text(value1);
+            
+
+                // Append the <option> element to the <select> element
+                    dropdown.append(option);
+            }
+            })
+            
+        
+    });   
+
+});
+
+    
+
+        </script> 
 </body>
 </form>
 </html>

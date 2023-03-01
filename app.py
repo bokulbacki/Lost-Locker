@@ -22,17 +22,10 @@ def get_db_connection():
 
 @app.route("/")
 def home():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM item;')
-    items = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template('UI.html', items=items)
+    
+    return render_template('UI.html')
 
-@app.route("/clothingClaim/", methods=('GET', 'POST'))
-def clothing():
-    return render_template('clothing_claim.html')
+
 
 @app.route("/browse/")
 def browse():
@@ -44,33 +37,15 @@ def browse():
     conn.close()
     return render_template('browse.html', items=items)
 
+@app.route('/lostitem/', methods=('GET', 'POST'))
+def lostitem():
+   
+        
+    return render_template('lost_claim.html')
+
 @app.route('/foundItem/', methods=('GET', 'POST'))
-def found():
-    if request.method == 'POST':
-
-
-        conn = get_db_connection()
-        cur = conn.cursor()
-        
-        print(request.form)
-
-        
-        item = None
-        clothing_type = None
-        brand = None
-        color = None
-        location = "library"
-        status = "lost"
-
-
-        if request.form['item_type'] == "Clothing":
-            print("entered")
-            item = "Clothing"
-            return render_template('clothing_claim.html')
-        conn.commit()
-        cur.close()
-        conn.close()
-        
+def founditem():
+    
     return render_template('found_claim.html')
 
 @app.route('/api/item-type')
@@ -83,8 +58,8 @@ def ReturnJSON():
     return jsonify(items)
   
 
-@app.route('/api/ClothingTypes')
-def returnClothingTypes():
+@app.route('/api/returnAttributes')
+def returnAttributes():
     var1=  request.args.get('var1')
     var2 = request.args.get('var2')
     conn = get_db_connection()
@@ -97,22 +72,6 @@ def returnClothingTypes():
     return jsonify(items)
 
 
-#left off doing this function, we don't know how to grab the input from the form 
-# and use that in the new sql query to grab specific brands
-@app.route('/api/brand')
-def returnBrands():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    itemType = request.form['available-items']
-    
-    
-    print(itemType)
-    
-    #data = cur.execute('select ')
-    items = cur.fetchall()
-    conn.close()
-    return jsonify(items)
-            
 
 
 
@@ -271,51 +230,13 @@ def create():
         return redirect(url_for('home'))
     return render_template('createitem.html')
         
-@app.route('/presentOptionsForLostItemClaim/', methods=('GET', 'POST'))
-def presentOptionsForLostItemClaim():
-    """
-    Assumptions:
-    - User is logged into LostLocker **
-    - User has lost an item around campus and hopes to find it
-    - They have chosen to create a lost item claim based on known information about it
 
-    1. User is presented with initial question
-        - Type of Item 
-            -Backend: 1-5 (clothing, bottle, backpack, device, etc) 
-    2. Using ItemType we present the full list of relevant attirubute types based on the item_attribute table
-        - Differetiate betweeen the different categories based on codes
-            1XX (Brand)
-            2XX (Colors)
-            4XX (model)
-            5XX (Size)
-            6XX (Location)
-            7XX (Stickers)
-            8XX (Cap Type)
-        - Ideally one dropdown button per applicable category (reference item_attribute table)
-    3. Gather all results and add them to the item_detail table using the original unique item_id
-    4. Complete the item table entry
-        fields:
-            - item_id     unique
-            - location (6XX) entry 
-            - notes ??
-            - submitted_by_user (automatic via logged in **)
-            - datefound (automatic? **)
-            - status (LOST)
-    """
         
        
         
     
     
     
-    # data = request.get_json()
-    # name = data["brand"]
-
-    # init_db.connect()
-    
-    # test = init_db.cur.fetchone()
-    # return test
-
 @app.route("/removeItem")
 def removeItem():
     return "Removing item" 
@@ -325,19 +246,3 @@ def USD():
     return render_template('USDtemp.html')
    
 
-@app.route("/hello/<name>")
-def hello_there(name):
-    now = datetime.now()
-    formatted_now = now.strftime("%A, %d %B, %Y at %X")
-
-    # Filter the name argument to letters only using regular expressions. URL arguments
-    # can contain arbitrary text, so we restrict to safe characters only.
-    match_object = re.match("[a-zA-Z]+", name)
-
-    if match_object:
-        clean_name = match_object.group(0)
-    else:
-        clean_name = "Friend"
-
-    content = "Hello there, " + clean_name + "! It's " + formatted_now
-    return content

@@ -342,7 +342,7 @@
     });   
     
     $('#available-items').on('change', function() {
-            
+        $('#location, #location-label').show();
             let dropdown = $('#location');
             dropdown.empty();
             dropdown.append('<option selected="true" disabled>Choose Location</option>');
