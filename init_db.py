@@ -4,13 +4,22 @@ import psycopg2
 from dotenv import load_dotenv
 load_dotenv()
 
+""" 
+Running web app cmmds:
+        source .venv/bin/activte
+        python3 init_db.py
+        flask run
 
+May need to run:
+        pip install psycopg2
+        pip install python-dotenv
+"""
 
 conn = psycopg2.connect(
         host="localhost",
         database="postgres",
-        user=os.getenv("DB_USERNAME"),
-        password=os.getenv("DB_PASSWORD"))
+        user=os.getenv("bberube"),
+        password=os.getenv("macyB2011!"))
 
 # Open a cursor to perform database operations
 cur = conn.cursor()
