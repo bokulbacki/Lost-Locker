@@ -25,10 +25,6 @@ def home():
     
     return render_template('UI.html')
 
-@app.route("/login/")
-def login():
-    return render_template('login.html')
-
 @app.route("/browse/")
 def browse():
     conn = get_db_connection()
