@@ -21,13 +21,12 @@ def get_db_connection():
 
 
 @app.route("/")
-def home():
-    
-    return render_template('UI.html')
+def loginPage():
+    return render_template('loginPage.html')
 
-@app.route("/login/")
-def login():
-    return render_template('login.html')
+@app.route("/home/")
+def home():
+    return render_template('UI.html')
 
 @app.route("/browse/")
 def browse():
