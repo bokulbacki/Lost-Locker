@@ -25,15 +25,17 @@ create table item_attribute
   attributetype_id  integer
  );
 
+
+
 create table item
 (
-  --item_id  serial primary key,
-  item_id integer not null primary key, -- autoincrement,
+  
+  item_id serial primary key,
   location  varchar(100),
   notes  varchar(100),
   submitted_by_user varchar(100),
   datefound date,
-  status bool
+  status varchar(100)
 );
 
 create table item_detail
@@ -129,20 +131,20 @@ Insert into attributeType (attributeType_id, attributeType, description) values 
 Insert into attributeType (attributeType_id, attributeType, description) values (201,'Color','Red');
 Insert into attributeType (attributeType_id, attributeType, description) values (202,'Color','Blue');
 Insert into attributeType (attributeType_id, attributeType, description) values (203,'Color','Yellow');
-Insert into attributeType (attributeType_id, attributeType, description) values (204,'Color ','White');
-Insert into attributeType (attributeType_id, attributeType, description) values (205,'Color ','Black');
-Insert into attributeType (attributeType_id, attributeType, description) values (206,'Color ','Brown');
-Insert into attributeType (attributeType_id, attributeType, description) values (207,'Color ','Green');
-Insert into attributeType (attributeType_id, attributeType, description) values (208,'Color ','Purple');
-Insert into attributeType (attributeType_id, attributeType, description) values (209,'Color ','Pink');
-Insert into attributeType (attributeType_id, attributeType, description) values (210,'Color ','Clear');
+Insert into attributeType (attributeType_id, attributeType, description) values (204,'Color','White');
+Insert into attributeType (attributeType_id, attributeType, description) values (205,'Color','Black');
+Insert into attributeType (attributeType_id, attributeType, description) values (206,'Color','Brown');
+Insert into attributeType (attributeType_id, attributeType, description) values (207,'Color','Green');
+Insert into attributeType (attributeType_id, attributeType, description) values (208,'Color','Purple');
+Insert into attributeType (attributeType_id, attributeType, description) values (209,'Color','Pink');
+Insert into attributeType (attributeType_id, attributeType, description) values (210,'Color','Clear');
 Insert into attributeType (attributeType_id, attributeType, description) values (211,'Color','Other');
-Insert into attributeType (attributeType_id, attributeType, description) values (212,'Color ','Grey');
-Insert into attributeType (attributeType_id, attributeType, description) values (213,'Color ','Orange');
-Insert into attributeType (attributeType_id, attributeType, description) values (214,'Color ','Beige');
-Insert into attributeType (attributeType_id, attributeType, description) values (215,'Color ','Gold');
-Insert into attributeType (attributeType_id, attributeType, description) values (216,'Color ','Silver');
-Insert into attributeType (attributeType_id, attributeType, description) values (217,'Color ','Wood');
+Insert into attributeType (attributeType_id, attributeType, description) values (212,'Color','Grey');
+Insert into attributeType (attributeType_id, attributeType, description) values (213,'Color','Orange');
+Insert into attributeType (attributeType_id, attributeType, description) values (214,'Color','Beige');
+Insert into attributeType (attributeType_id, attributeType, description) values (215,'Color','Gold');
+Insert into attributeType (attributeType_id, attributeType, description) values (216,'Color','Silver');
+Insert into attributeType (attributeType_id, attributeType, description) values (217,'Color','Wood');
 
 
 

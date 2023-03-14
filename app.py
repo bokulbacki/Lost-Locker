@@ -39,14 +39,21 @@ def browse():
 
 @app.route('/lostitem/', methods=('GET', 'POST'))
 def lostitem():
+    if request.method == 'POST':
+        status = 'Lost'
+        process(status)
    
         
-    return render_template('lost_claim.html')
+        return render_template('lost_claim.html')
+    else:
+
+        return render_template('lost_claim.html')
 
 @app.route('/foundItem/', methods=('GET', 'POST'))
 def founditem():
     if request.method == 'POST':
-        process()
+        status = 'Found'
+        process(status)
         return render_template('found_claim.html')
     else:
 
@@ -68,15 +75,17 @@ def returnAttributes():
     var2 = request.args.get('var2')
     conn = get_db_connection()
     cur = conn.cursor()
-    print("Var1 : " + var1)
-    print("Var2 : " + var2)
+    
     data = cur.execute('select i.itemtype_id, i.itemtype, a.attributetype_id, a.attributetype, a.description, ia.itemtype_id, ia.attributetype_id from itemtype i, item_attribute ia, attributetype a where i.itemtype_id = ia.itemtype_id and a.attributetype_id = ia.attributetype_id and i.itemtype_id =' + var1 + " and a.attributetype = '" + var2 + "'")
     items = cur.fetchall()
     conn.close()
     return jsonify(items)
 
 
-def process():
+def process(status):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
     itemType = request.form['available-items']
     print("item: " + itemType)
     clothingType = request.form['clothing-types']
@@ -96,8 +105,83 @@ def process():
     location = request.form['location']
     print("location: " + location)
 
+
+
+    # cur.execute("SELECT itemType FROM itemType WHERE itemtype_id =" + itemType)
+    # itemType = cur.fetchone()[0]
+    attributes = [clothingType, brand, model, color, size, stickers, book, location]
+
+    
+    notes = "..."
+    user = "John"
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    print(current_date)
+
+    
+    #cur.execute('Insert into item(item_id, location, notes, submitted_by_user, datefound, status) values (101,'USD', 'TK written on label', 'Bo Knows', '01/02/2022', 'unclaimed');')
+
+    cur.execute('INSERT INTO item (location, notes, submitted_by_user, datefound, status)'
+                        'VALUES (%s, %s, %s, %s, %s)',
+                        (location, notes, user, current_date, status))
+    
+    cur.execute("SELECT currval('item_item_id_seq')")
+    new_id = cur.fetchone()[0]
+    print("Last item_id inserted:", new_id)
+
+
+ 
+
+# Fetch the result and assign it to a variable
     
 
+
+    for item in attributes:
+        
+        if item != '':
+            print(item)
+            cur.execute("SELECT attributeType_id FROM attributeType WHERE description ='" + item + "'")
+            result = cur.fetchone()[0]
+            
+
+            print(new_id)
+            print(itemType)
+            print(result)
+            
+            cur.execute('INSERT INTO item_detail (item_id, itemType_id, attributetype_id)'
+                        'VALUES (%s, %s, %s)',
+                        (new_id, itemType, result))
+        
+    conn.commit()
+    cur.close()
+    conn.close()
+    
+
+
+    
+
+
+
+def matching():
+
+    #filter by itemtype (must match)
+
+        #case 1: if clothing match
+
+            #if clothing type match
+                #if either brand, size, or color match
+                    #propose the matched item
+
+        #case 2: if device match 
+             #if brand and model match
+                    #propose the matched item
+
+        #case 3: if bag match
+            #if bagtype match
+                #if brand or color match
+                    #propose mathced item
+
+        #case 4: if book match
+            #if input matches title or author
 
 
 @app.route('/createItem/', methods=('GET', 'POST'))
