@@ -416,3 +416,100 @@ Insert into item_attribute(itemType_id, attributeType_id) values (5,608);
 Insert into item_attribute(itemType_id, attributeType_id) values (5,609);
 Insert into item_attribute(itemType_id, attributeType_id) values (5,701);
 Insert into item_attribute(itemType_id, attributeType_id) values (5,702);
+
+
+
+
+--important
+create view locker_items as
+Select i.item_id, i.location, i.status, a.attributetype, a.description, it.itemtype
+from item i, 
+  item_detail id, 
+  itemtype it 
+  ,item_attribute ia
+  ,attributetype a
+where i.item_id = id.item_id
+and it.itemtype_id = id.itemtype_id
+and ia.attributetype_id = id.attributetype_id
+and ia.itemtype_id = id.itemtype_id
+and ia.attributetype_id = a.attributetype_id
+and i.status = 'Found'
+order by item_id;
+
+-- Ranking query
+Select count(item_id) as rank, item_id
+from locker_items
+where itemtype = 'Bottle'
+and (description = 'Red' or description = 'Yeti' or description = 'Hydro Flask')
+group by item_id
+order by item_id;
+
+Select * from locker_items
+where item_id IN (2,4)
+
+
+
+
+
+
+Select * from vlocker_item
+where item_id IN (6,7,9);
+
+
+
+
+
+--extra 
+select * from item_detail;
+
+select b.*, id.*, i.itemtype_id, i.itemtype, a.attributetype_id, 
+a.attributetype, a.description, ia.itemtype_id, ia.attributetype_id 
+from itemtype i, item_attribute ia, attributetype a, item b, item_detail id
+where i.itemtype_id = ia.itemtype_id 
+and a.attributetype_id = ia.attributetype_id 
+and b.item_id = 9
+and i.itemtype_id = id.item_id
+and id.item_id = b.item_id;
+
+-- Ranking query
+Select count(i.item_id), i.item_id
+from item i, 
+  item_detail id, 
+  itemtype it 
+  ,item_attribute ia
+  ,attributetype a
+where  i.item_id = id.item_id
+and it.itemtype_id = id.itemtype_id
+and ia.attributetype_id = id.attributetype_id
+and ia.itemtype_id = id.itemtype_id
+and ia.attributetype_id = a.attributetype_id
+and it.itemtype = 'Bottle'
+and (a.description = 'Red' or description = 'Yeti' or description = 'Hydro Flask')
+group by i.item_id
+order by item_id;
+
+
+Select i.item_id, i.location, i.status, a.attributetype, a.description, it.itemtype
+from item i, 
+  item_detail id, 
+  itemtype it 
+  ,item_attribute ia
+  ,attributetype a
+where i.item_id = id.item_id
+and it.itemtype_id = id.itemtype_id
+and ia.attributetype_id = id.attributetype_id
+and ia.itemtype_id = id.itemtype_id
+and ia.attributetype_id = a.attributetype_id
+order by item_id;
+
+
+
+
+
+
+
+
+
+
+
+

@@ -19,12 +19,14 @@ def get_db_connection():
     return conn 
 
 
-
 @app.route("/")
-def home():
+def loginPage():
     
-    return render_template('UI.html')
+    return render_template('loginPage.html')
 
+@app.route("/home/")
+def home():
+    return render_template('UI.html')
 
 
 @app.route("/browse/")
@@ -86,30 +88,36 @@ def process(status):
     conn = get_db_connection()
     cur = conn.cursor()
 
-    itemType = request.form['available-items']
-    print("item: " + itemType)
+    itemTypeID = request.form['available-items']
+    
     clothingType = request.form['clothing-types']
-    print("clothingtype: " + clothingType)
+    
     brand = request.form['brands']
-    print("brand: " + brand)
+    
     model = request.form['models']
-    print("model: " + model)
+    
     color = request.form['color']
-    print("color: " + color)
+   
     size = request.form['size']
-    print(size)
+   
     stickers = request.form['stickers']
-    print("stickers: " +stickers)
+   
     book = request.form['book']
-    print("book: " + book)
+    
     location = request.form['location']
-    print("location: " + location)
+    
+    
+    attributes_d = {"Item Type": itemTypeID, "Clothing Type": clothingType, "Brand": brand, "Model": model, "Color": color, "Size": size, "Stickers": stickers, "Book": book, "Location": location}
+    print(attributes_d)
+    matching(attributes_d)
 
-
+    attributes = [clothingType, brand, model, color, size, stickers, book, location]
 
     # cur.execute("SELECT itemType FROM itemType WHERE itemtype_id =" + itemType)
     # itemType = cur.fetchone()[0]
-    attributes = [clothingType, brand, model, color, size, stickers, book, location]
+    # list_for_matching = [itemTypeID, clothingType, brand, model, color, size, stickers, book, location]
+    # matching(list_for_matching)
+    
 
     
     notes = "..."
@@ -117,8 +125,7 @@ def process(status):
     current_date = datetime.now().strftime('%Y-%m-%d')
     print(current_date)
 
-    
-    #cur.execute('Insert into item(item_id, location, notes, submitted_by_user, datefound, status) values (101,'USD', 'TK written on label', 'Bo Knows', '01/02/2022', 'unclaimed');')
+
 
     cur.execute('INSERT INTO item (location, notes, submitted_by_user, datefound, status)'
                         'VALUES (%s, %s, %s, %s, %s)',
@@ -131,9 +138,10 @@ def process(status):
 
  
 
+
+
 # Fetch the result and assign it to a variable
     
-
 
     for item in attributes:
         
@@ -144,12 +152,12 @@ def process(status):
             
 
             print(new_id)
-            print(itemType)
+            print(itemTypeID)
             print(result)
             
             cur.execute('INSERT INTO item_detail (item_id, itemType_id, attributetype_id)'
                         'VALUES (%s, %s, %s)',
-                        (new_id, itemType, result))
+                        (new_id, itemTypeID, result))
         
     conn.commit()
     cur.close()
@@ -157,31 +165,108 @@ def process(status):
     
 
 
+
+
+
+
+
+def matching(attributes_d):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute('drop view IF EXISTS locker_items')
+    cur.execute("create view locker_items as\
+                Select i.item_id, i.location, i.status, a.attributetype, a.description, it.itemtype\
+                from item i, item_detail id, itemtype it, item_attribute ia, attributetype a\
+                where i.item_id = id.item_id\
+                and it.itemtype_id = id.itemtype_id\
+                and ia.attributetype_id = id.attributetype_id\
+                and ia.itemtype_id = id.itemtype_id\
+                and ia.attributetype_id = a.attributetype_id\
+                and i.status = 'Found'\
+                order by item_id")
     
 
+     #if its clothing
+    if attributes_d['Item Type'] == '1':
 
 
-def matching():
+        #return ranked items by if clothing type match and if (brand or size or color match)
+        cur.execute("Select count(item_id) as rank, item_id\
+                    from locker_items\
+                    where itemtype = 1\
+                    and description = '" + attributes_d['Cothing Type'] + "' and (description = '" + attributes_d['Brand'] + "' or description = '" + attributes_d['Color'] + "' or description = '" + attributes_d['Size'] + "')\
+                    group by item_id\
+                    order by item_id;")
+        
+        
+    #     #if its a water bottle    
+    elif attributes_d['Item Type'] == '2':
+        print('entered bottle')
 
-    #filter by itemtype (must match)
+        #if brand or color or stickers match
+        cur.execute("Select count(item_id) as rank, item_id\
+                    from locker_items\
+                    where itemtype = 'Bottle'\
+                    and (description = '" + attributes_d['Brand'] + "' or description = '" + attributes_d['Color'] + "' or description = '" + attributes_d['Stickers'] + "')\
+                    group by item_id\
+                    order by item_id;")
+        
+        print('made query')
+        ranked_items = cur.fetchall()
+        print(ranked_items)
+    
+    elif attributes_d['Item Type'] == '3':
 
-        #case 1: if clothing match
+        #if brand or color or stickers match
+        cur.execute("Select count(item_id) as rank, item_id\
+                    from locker_items\
+                    where itemtype = 1\
+                    and description = '" + attributes_d['Brand'] + "' and description = '" + attributes_d['Model'] + "')\
+                    group by item_id\
+                    order by item_id;")
+        
+    
+    elif attributes_d['Item Type'] == '4':
 
-            #if clothing type match
-                #if either brand, size, or color match
-                    #propose the matched item
+        #if brand or color or stickers match
+        cur.execute("Select count(item_id) as rank, item_id\
+                    from locker_items\
+                    where itemtype = 1\
+                    and description = '" + attributes_d['Brand'] + "' or description = '" + attributes_d['Color'] + "')\
+                    group by item_id\
+                    order by item_id;")
+        
 
-        #case 2: if device match 
-             #if brand and model match
-                    #propose the matched item
+    elif attributes_d['Item Type'] == '5':
 
-        #case 3: if bag match
-            #if bagtype match
-                #if brand or color match
-                    #propose mathced item
+        return None 
 
-        #case 4: if book match
-            #if input matches title or author
+
+    
+    
+    conn.commit()
+    cur.close()
+    conn.close()
+            
+       
+
+
+
+#     if attributes[0] == 3:
+#         #if device and brand and model match
+             
+#             #propose the matched item
+
+#     if attributes[0] == 4:
+#     #if bag and bagtype
+#         #if bagtype match and (brand or color) match
+            
+#             #propose matched item
+
+#     if attributes[0] == 5:
+#     #if book match
+#         #if input matches title or author
 
 
 @app.route('/createItem/', methods=('GET', 'POST'))
