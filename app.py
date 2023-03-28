@@ -37,7 +37,7 @@ def browse():
     items = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template('browse.html', items=items)
+    return render_template('browse2.html', items=items)
 
 @app.route('/lostitem/', methods=('GET', 'POST'))
 def lostitem():
@@ -123,7 +123,7 @@ def process(status):
     notes = "..."
     user = "John"
     current_date = datetime.now().strftime('%Y-%m-%d')
-    print(current_date)
+    
 
 
 
@@ -133,7 +133,7 @@ def process(status):
     
     cur.execute("SELECT currval('item_item_id_seq')")
     new_id = cur.fetchone()[0]
-    print("Last item_id inserted:", new_id)
+    
 
 
  
@@ -146,14 +146,12 @@ def process(status):
     for item in attributes:
         
         if item != '':
-            print(item)
+            
             cur.execute("SELECT attributeType_id FROM attributeType WHERE description ='" + item + "'")
             result = cur.fetchone()[0]
             
 
-            print(new_id)
-            print(itemTypeID)
-            print(result)
+            
             
             cur.execute('INSERT INTO item_detail (item_id, itemType_id, attributetype_id)'
                         'VALUES (%s, %s, %s)',
@@ -202,7 +200,7 @@ def matching(attributes_d):
         
     #     #if its a water bottle    
     elif attributes_d['Item Type'] == '2':
-        print('entered bottle')
+        
 
         #if brand or color or stickers match
         cur.execute("Select count(item_id) as rank, item_id\
@@ -222,7 +220,7 @@ def matching(attributes_d):
         cur.execute("Select count(item_id) as rank, item_id\
                     from locker_items\
                     where itemtype = 1\
-                    and description = '" + attributes_d['Brand'] + "' and description = '" + attributes_d['Model'] + "')\
+                    and (description = '" + attributes_d['Brand'] + "' and description = '" + attributes_d['Model'] + "')\
                     group by item_id\
                     order by item_id;")
         
@@ -233,7 +231,7 @@ def matching(attributes_d):
         cur.execute("Select count(item_id) as rank, item_id\
                     from locker_items\
                     where itemtype = 1\
-                    and description = '" + attributes_d['Brand'] + "' or description = '" + attributes_d['Color'] + "')\
+                    and (description = '" + attributes_d['Brand'] + "' or description = '" + attributes_d['Color'] + "')\
                     group by item_id\
                     order by item_id;")
         
@@ -269,73 +267,73 @@ def matching(attributes_d):
 #         #if input matches title or author
 
 
-@app.route('/createItem/', methods=('GET', 'POST'))
-def create():
-    if request.method == 'POST':
+# @app.route('/createItem/', methods=('GET', 'POST'))
+# def create():
+#     if request.method == 'POST':
 
 
-        conn = get_db_connection()
-        cur = conn.cursor()
+#         conn = get_db_connection()
+#         cur = conn.cursor()
         
-        print(request.form)
+#         print(request.form)
 
         
-        item = None
-        clothing_type = None
-        brand = None
-        color = None
-        location = "library"
-        status = "lost"
+#         item = None
+#         clothing_type = None
+#         brand = None
+#         color = None
+#         location = "library"
+#         status = "lost"
 
 
-        if request.form['item_type'] == "Clothing":
-            print("entered")
-            item = "Clothing"
-            clothing_type = request.form['ClothingType']
-            brand = request.form['ClothingBrand']
-            color = request.form['Color']
+#         if request.form['item_type'] == "Clothing":
+#             print("entered")
+#             item = "Clothing"
+#             clothing_type = request.form['ClothingType']
+#             brand = request.form['ClothingBrand']
+#             color = request.form['Color']
             
 
-            if location == None:
-                lost_item_data = [item, clothing_type, brand, color]
-            else:
-                lost_item_data = [item, clothing_type, brand, color, location]
+#             if location == None:
+#                 lost_item_data = [item, clothing_type, brand, color]
+#             else:
+#                 lost_item_data = [item, clothing_type, brand, color, location]
 
 
-            #chnge lost status
-            cur.execute('Select * From Item Where item_type = %s and status = %s', (item, "lost"))
-            typeMatch = cur.fetchall()
+#             #chnge lost status
+#             cur.execute('Select * From Item Where item_type = %s and status = %s', (item, "lost"))
+#             typeMatch = cur.fetchall()
 
             
            
             
-            if typeMatch:
-                print(len(typeMatch))
-                found_items_dictionary = {}
-                similarity_dictionary = {}
-                itemMatchArrays = []
+#             if typeMatch:
+#                 print(len(typeMatch))
+#                 found_items_dictionary = {}
+#                 similarity_dictionary = {}
+#                 itemMatchArrays = []
 
-                #for all found items of the same  item type (clothing, waterbottle)
-                for entry in typeMatch:
-                    print(entry)
-                    found_items_dictionary[entry[0]] = [entry[1], entry[2], entry[3], entry[4], entry[5]]
-                itemMatchArrays.append(found_items_dictionary)
+#                 #for all found items of the same  item type (clothing, waterbottle)
+#                 for entry in typeMatch:
+#                     print(entry)
+#                     found_items_dictionary[entry[0]] = [entry[1], entry[2], entry[3], entry[4], entry[5]]
+#                 itemMatchArrays.append(found_items_dictionary)
 
-                print(lost_item_data)
+#                 print(lost_item_data)
 
-                for item_id in found_items_dictionary:
-                    print(item_id)
-                    common_characteristics = len(set(lost_item_data) & set(found_items_dictionary[item_id]))
+#                 for item_id in found_items_dictionary:
+#                     print(item_id)
+#                     common_characteristics = len(set(lost_item_data) & set(found_items_dictionary[item_id]))
                    
                     
-                    similarity_dictionary[item_id] = common_characteristics
+#                     similarity_dictionary[item_id] = common_characteristics
 
 
-                best_match = max(similarity_dictionary, key=similarity_dictionary.get)
-                print(best_match)
-                if best_match > 3:
+#                 best_match = max(similarity_dictionary, key=similarity_dictionary.get)
+#                 print(best_match)
+#                 if best_match > 3:
 
-                    return found_items_dictionary[best_match]
+#                     return found_items_dictionary[best_match]
 
            
 
@@ -345,84 +343,84 @@ def create():
 
                 
 
-        elif request.form['item_type'] == "waterbottle":
-            item_type = request.form['item_type']
+#         elif request.form['item_type'] == "waterbottle":
+#             item_type = request.form['item_type']
             
-            brand = request.form['brand']
-            color = request.form['color']
-            stickers = request.form['stickers']
-            location = request.form['location']
+#             brand = request.form['brand']
+#             color = request.form['color']
+#             stickers = request.form['stickers']
+#             location = request.form['location']
 
-            if location == None:
-                lost_item_data = [item_type, brand, color, stickers]
-            else:
-                lost_item_data = [item_type, brand, color, stickers, location]
+#             if location == None:
+#                 lost_item_data = [item_type, brand, color, stickers]
+#             else:
+#                 lost_item_data = [item_type, brand, color, stickers, location]
 
-        elif request.form['item_type'] == "device":
+#         elif request.form['item_type'] == "device":
 
-            item_type = request.form['item_type']
-            device_type = request.form['type2']
-            brand = request.form['brand']
-            color = request.form['color']
-            stickers = request.form['stickers']
-            location = request.form['location']
+#             item_type = request.form['item_type']
+#             device_type = request.form['type2']
+#             brand = request.form['brand']
+#             color = request.form['color']
+#             stickers = request.form['stickers']
+#             location = request.form['location']
 
-            if location == None:
-                lost_item_data = [item_type, device_type, brand, color, stickers]
-            else:
-                lost_item_data = [item_type, device_type, brand, color, stickers, location]
+#             if location == None:
+#                 lost_item_data = [item_type, device_type, brand, color, stickers]
+#             else:
+#                 lost_item_data = [item_type, device_type, brand, color, stickers, location]
         
 
-        elif request.form['item_type'] == "bag":
+#         elif request.form['item_type'] == "bag":
 
-            item = request.form['item_type']
-            bag_type = request.form['type2']
-            brand = request.form['brand']
-            color = request.form['color']
-            stickers = request.form['stickers']
-            location = request.form['location']
+#             item = request.form['item_type']
+#             bag_type = request.form['type2']
+#             brand = request.form['brand']
+#             color = request.form['color']
+#             stickers = request.form['stickers']
+#             location = request.form['location']
 
-            if location == None:
-                lost_item_data = [item, bag_type, brand, color, stickers]
-            else:
-                lost_item_data = [item, bag_type, brand, color, stickers, location]
+#             if location == None:
+#                 lost_item_data = [item, bag_type, brand, color, stickers]
+#             else:
+#                 lost_item_data = [item, bag_type, brand, color, stickers, location]
         
 
-        elif request.form['item_type'] == "wallet/purse":
+#         elif request.form['item_type'] == "wallet/purse":
 
-            item = request.form['item_type']
-            walletpurse_type = request.form['type2']
-            brand = request.form['brand']
-            color = request.form['color']
-            stickers = request.form['stickers']
-            location = request.form['location']
+#             item = request.form['item_type']
+#             walletpurse_type = request.form['type2']
+#             brand = request.form['brand']
+#             color = request.form['color']
+#             stickers = request.form['stickers']
+#             location = request.form['location']
 
-            if location == None:
-                lost_item_data = [item, walletpurse_type, brand, color, stickers]
-            else:
-                lost_item_data = [item, walletpurse_type, brand, color, stickers, location]
+#             if location == None:
+#                 lost_item_data = [item, walletpurse_type, brand, color, stickers]
+#             else:
+#                 lost_item_data = [item, walletpurse_type, brand, color, stickers, location]
         
 
-        #elif request.form['item_type'] == "other":
+#         #elif request.form['item_type'] == "other":
 
 
       
-        #create characteristics array for jaccard comparison
+#         #create characteristics array for jaccard comparison
         
 
          
         
-        cur.execute('INSERT INTO item (item_type, type2, brand, color, location, status)'
-                        'VALUES (%s, %s, %s, %s, %s, %s)',
-                        (item, clothing_type, brand, color, location, status))
+#         cur.execute('INSERT INTO item (item_type, type2, brand, color, location, status)'
+#                         'VALUES (%s, %s, %s, %s, %s, %s)',
+#                         (item, clothing_type, brand, color, location, status))
 
 
         
-        conn.commit()
-        cur.close()
-        conn.close()
-        return redirect(url_for('home'))
-    return render_template('createitem.html')
+#         conn.commit()
+#         cur.close()
+#         conn.close()
+#         return redirect(url_for('home'))
+#     return render_template('createitem.html')
         
 
         

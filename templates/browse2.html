@@ -1,0 +1,31 @@
+{% extends 'UI.html' %}
+
+{% block content %}
+    <h1>{% block title %} Items {% endblock %}</h1>
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item Number</th>
+                    <th>Location Lost/Found</th>
+                    <th>Notes</th>
+                    <th>User</th>
+                    <th>Item Image</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>{{ item[0] }}</td>
+                        <td>{{ item[1] }}</td>
+                        <td>{{ item[2] }}</td>
+                        <td>{{ item[3] }}</td>
+                        <td><img src="{{ item[4] }}" alt="{{ item[0] }}" width="100"></td>
+                        <td>status: {{ item[5] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
