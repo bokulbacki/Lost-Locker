@@ -28,16 +28,77 @@ def loginPage():
 def home():
     return render_template('UI.html')
 
+@app.route("/api/getFilteredItems")
+def getFilteredItems():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('select DISTINCT item_id from locker_items;')
+    item_ids = cur.fetchall()
+    print(item_ids)
+    items_dict = {}
+    count = 0
+    for item in item_ids:
+
+        cur.execute("select description from locker_items\
+                    where item_id =" + str(item[0]) + ";")
+        
+        items = cur.fetchall()
+        items_dict[count] = items
+        count += 1
+    
+      
+
 
 @app.route("/browse/")
 def browse():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT * FROM item;')
-    items = cur.fetchall()
+    cur.execute('select DISTINCT item_id from locker_items;')
+    item_ids = cur.fetchall()
+    print(item_ids)
+    result_dict = {}
+    
+    for item in item_ids:
+
+        cur.execute("select item_id, attributetype, description,itemtype from locker_items\
+                    where item_id =" + str(item[0]) + ";")
+        
+        items = cur.fetchall()
+
+        
+
+        # for item in items:
+        #     if item[0] in result_dict:
+        #         result_dict[item[0]].append(item[1])
+        #     else:
+        #         result_dict[item[0]] = [item[1]]
+
+        
+        for row in items:
+            print(row)
+            item_id = row[0]
+            attr_type = row[1]
+            desc = row[2]
+    
+            if item_id not in result_dict:
+                result_dict[item_id] = {}
+    
+            result_dict[item_id][attr_type] = desc
+        result_dict[item_id]['Item Type'] = row[3]
+
+    print(result_dict)
+
+        
+        
+       
+
+    
+       
+    
+    
     cur.close()
     conn.close()
-    return render_template('browse2.html', items=items)
+    return render_template('browse3.html', result_dict=result_dict)
 
 @app.route('/lostitem/', methods=('GET', 'POST'))
 def lostitem():
@@ -109,7 +170,7 @@ def process(status):
     
     attributes_d = {"Item Type": itemTypeID, "Clothing Type": clothingType, "Brand": brand, "Model": model, "Color": color, "Size": size, "Stickers": stickers, "Book": book, "Location": location}
     print(attributes_d)
-    matching(attributes_d)
+    #matching(attributes_d)
 
     attributes = [clothingType, brand, model, color, size, stickers, book, location]
 

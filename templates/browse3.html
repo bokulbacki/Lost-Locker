@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dictionary Display</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+      
+      th, td {
+        text-align: left;
+        padding: 8px;
+      }
+      
+      th {
+        background-color: #f2f2f2;
+      }
+      
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+      
+      tr:hover {
+        background-color: #ddd;
+      }
+      
+      .table-container {
+        width: 80%;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="table-container">
+      <table>
+        <tr>
+          <th>Item ID</th>
+          <th>Item Type</th>
+          <th>Description</th>
+        </tr>
+        {% for item_id, item_dict in result_dict.items() %}
+        <tr>
+          <td>{{ item_id }}</td>
+          <td>{{ item_dict["Item Type"] }}</td>
+          <td>
+            {% for attr_type, desc in item_dict.items() %}
+            {% if attr_type != 'Item Type' and attr_type != 'item_id' %}
+            {{ attr_type }}: {{ desc }}{% if not loop.last %}<br>{% endif %}
+            {% endif %}
+            {% endfor %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </body>
+</html>
