@@ -7,7 +7,6 @@ load_dotenv()
 """ 
 Running web app cmmds:
         source .venv/bin/activte
-        python3 init_db.py
         flask run
 
 May need to run:
