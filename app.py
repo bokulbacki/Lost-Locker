@@ -27,7 +27,7 @@ app = Flask(__name__)
 
 def get_db_connection():
     conn = psycopg2.connect(database='initial_db', user='postgres', password='notlostbutfound', host='my-ll-db.cw9eo1fjiaor.us-west-2.rds.amazonaws.com', port='5432')
-    return conn 
+    return conn  
 
 
 @app.route("/")
