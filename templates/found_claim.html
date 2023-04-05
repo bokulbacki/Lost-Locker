@@ -102,12 +102,12 @@ width: 500px;
 }
   </style>
 </head>
-<form id="newClaim" method="post">
+<form id="newClaim" method="post"  action="/foundItem/" enctype="multipart/form-data">
 <body>
  
 	<div class="wrapper">
     <div class="form_container">
-      <form name ="form">
+      
         <div class="heading">
           <h2>Found Item Claim</h2>
 
@@ -184,6 +184,14 @@ width: 500px;
       <label id="location-label" for="dropdown"  style="display:none;">Please select a location where item was lost if known: </label>
         
       <select id="location" name="location"  style="display:none;"></select>
+
+
+      
+     
+      <input type="file" name="image-upload" id="image-upload">
+      
+   
+      
 
       <input type="submit" value="Submit">
      

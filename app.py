@@ -3,6 +3,13 @@ import psycopg2
 import re
 from datetime import datetime
 from flask import Flask, render_template, request, url_for, redirect, jsonify
+import uuid
+from PIL import Image
+from io import BytesIO
+import traceback
+from psycopg2 import Binary
+import base64
+
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -11,11 +18,15 @@ load_dotenv()
 app = Flask(__name__)
 
 #tyler branch
+# def get_db_connection():
+#     conn = psycopg2.connect(host='localhost',
+#                             database='postgres',
+#                             user=os.getenv('DB_USERNAME'),
+#                             password=os.getenv('DB_PASSWORD'))
+#     return conn 
+
 def get_db_connection():
-    conn = psycopg2.connect(host='localhost',
-                            database='postgres',
-                            user=os.getenv('DB_USERNAME'),
-                            password=os.getenv('DB_PASSWORD'))
+    conn = psycopg2.connect(database='initial_db', user='postgres', password='notlostbutfound', host='my-ll-db.cw9eo1fjiaor.us-west-2.rds.amazonaws.com', port='5432')
     return conn 
 
 
@@ -34,7 +45,7 @@ def getFilteredItems():
     cur = conn.cursor()
     cur.execute('select DISTINCT item_id from locker_items;')
     item_ids = cur.fetchall()
-    print(item_ids)
+   
     items_dict = {}
     count = 0
     for item in item_ids:
@@ -55,12 +66,12 @@ def browse():
     cur = conn.cursor()
     cur.execute('select DISTINCT item_id from locker_items;')
     item_ids = cur.fetchall()
-    print(item_ids)
+  
     result_dict = {}
     
     for item in item_ids:
 
-        cur.execute("select item_id, attributetype, description,itemtype from locker_items\
+        cur.execute("select item_id, attributetype, description,itemtype,image from locker_items\
                     where item_id =" + str(item[0]) + ";")
         
         items = cur.fetchall()
@@ -75,7 +86,7 @@ def browse():
 
         
         for row in items:
-            print(row)
+           
             item_id = row[0]
             attr_type = row[1]
             desc = row[2]
@@ -86,7 +97,12 @@ def browse():
             result_dict[item_id][attr_type] = desc
         result_dict[item_id]['Item Type'] = row[3]
 
-    print(result_dict)
+        if row[4] is not None:
+            image_bytes = bytes(row[4])
+            image_data = base64.b64encode(image_bytes).decode('utf-8')
+            result_dict[item_id]['Image'] = image_data
+
+  
 
         
         
@@ -112,9 +128,9 @@ def lostitem():
 
         return render_template('lost_claim.html')
 
-@app.route('/foundItem/', methods=('GET', 'POST'))
+@app.route('/foundItem/', methods=('GET', 'POST', 'PUT'))
 def founditem():
-    if request.method == 'POST':
+    if request.method == 'POST' or request.method == 'PUT':
         status = 'Found'
         process(status)
         return render_template('found_claim.html')
@@ -148,28 +164,59 @@ def returnAttributes():
 def process(status):
     conn = get_db_connection()
     cur = conn.cursor()
-
+   
     itemTypeID = request.form['available-items']
     
     clothingType = request.form['clothing-types']
-    
-    brand = request.form['brands']
-    
+    brand = request.form['brands']    
     model = request.form['models']
-    
     color = request.form['color']
-   
     size = request.form['size']
-   
     stickers = request.form['stickers']
-   
     book = request.form['book']
-    
     location = request.form['location']
+    file = request.files['image-upload']
+   
     
+    try:
+    # your code to open the image file
+        buffer = BytesIO()
+        file.save(buffer)
+        buffer.seek(0)
+        img = Image.open(buffer)
+        img.load()
+    except Exception as e:
+        print(traceback.format_exc())
+        return 'Invalid file type!' 
     
+    filename = str(uuid.uuid4())
+    ext = os.path.splitext(file.filename)[1].lower()
+
+    if ext not in ['.jpg', '.jpeg', '.png', '.heic']:
+       
+        return 'Invalid file type!'
+    
+    filename = filename + ext
+    buffer.seek(0)  # Move the buffer cursor back to the beginning
+    with open(os.path.join('images', filename), 'wb') as f:
+        f.write(buffer.read())  # Write the buffer contents to the file
+
+
+
+
+   
+    
+    if ext in ('.jpg', '.jpeg'):
+
+        img.save(buffer, format='JPEG')
+    elif ext in('.png'):
+
+        img.save(buffer, format='PNG')
+    image_data = buffer.getvalue()
+
+
     attributes_d = {"Item Type": itemTypeID, "Clothing Type": clothingType, "Brand": brand, "Model": model, "Color": color, "Size": size, "Stickers": stickers, "Book": book, "Location": location}
-    print(attributes_d)
+   
     #matching(attributes_d)
 
     attributes = [clothingType, brand, model, color, size, stickers, book, location]
@@ -188,17 +235,31 @@ def process(status):
 
 
 
-    cur.execute('INSERT INTO item (location, notes, submitted_by_user, datefound, status)'
-                        'VALUES (%s, %s, %s, %s, %s)',
-                        (location, notes, user, current_date, status))
+    cur.execute('INSERT INTO item (location, notes, submitted_by_user, datefound, status, image)'
+                        'VALUES (%s, %s, %s, %s, %s, %s)',
+                        (location, notes, user, current_date, status, image_data))
+    
+
+
+
+    
+    cur.execute("SELECT image FROM item WHERE item_id = 21")
+    result = cur.fetchone()
+    
+
+# Compare the retrieved image data with the original image data
+   
+    
+
+
+
+
+
     
     cur.execute("SELECT currval('item_item_id_seq')")
     new_id = cur.fetchone()[0]
+
     
-
-
- 
-
 
 
 # Fetch the result and assign it to a variable
@@ -218,6 +279,7 @@ def process(status):
                         'VALUES (%s, %s, %s)',
                         (new_id, itemTypeID, result))
         
+    buffer.close()
     conn.commit()
     cur.close()
     conn.close()
@@ -271,9 +333,9 @@ def matching(attributes_d):
                     group by item_id\
                     order by item_id;")
         
-        print('made query')
+       
         ranked_items = cur.fetchall()
-        print(ranked_items)
+        
     
     elif attributes_d['Item Type'] == '3':
 

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -40,7 +41,6 @@
           <th>Item ID</th>
           <th>Item Type</th>
           <th>Description</th>
-          <th>Image</th> <!-- Add a new column for the image -->
         </tr>
         {% for item_id, item_dict in result_dict.items() %}
         <tr>
@@ -48,15 +48,10 @@
           <td>{{ item_dict["Item Type"] }}</td>
           <td>
             {% for attr_type, desc in item_dict.items() %}
-            {% if attr_type != 'Item Type' and attr_type != 'item_id' and attr_type != 'Image' %} <!-- Exclude 'Image' attribute -->
+            {% if attr_type != 'Item Type' and attr_type != 'item_id' %}
             {{ attr_type }}: {{ desc }}{% if not loop.last %}<br>{% endif %}
             {% endif %}
             {% endfor %}
-          </td>
-          <td>
-            {% if 'Image' in item_dict %} <!-- Check if 'Image' attribute exists in item_dict -->
-            <img src="data:image/jpeg;base64,{{ item_dict['Image'] }}" width="100" height="100"> <!-- Display the image using base64 encoded data -->
-            {% endif %}
           </td>
         </tr>
         {% endfor %}
