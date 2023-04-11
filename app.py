@@ -175,26 +175,27 @@ def process(status):
     location = request.form['location']
     file = request.files['image-upload']
    
+    if file != None:
 
-    print("entered!!")
-    #tries to open image file
-    try:
-        buffer = BytesIO()
-        file.save(buffer)
-        buffer.seek(0)
-        img = Image.open(buffer)
-        img.load()
-    except Exception as e:
-        print(traceback.format_exc())
-        return 'Invalid file type!' 
+        print("entered!!")
+        #tries to open image file
+        try:
+            buffer = BytesIO()
+            file.save(buffer)
+            buffer.seek(0)
+            img = Image.open(buffer)
+            img.load()
+        except Exception as e:
+            print(traceback.format_exc())
+        
     
 
-    filename = str(uuid.uuid4())
-    ext = os.path.splitext(file.filename)[1].lower()
+        filename = str(uuid.uuid4())
+        ext = os.path.splitext(file.filename)[1].lower()
 
-    if ext not in ['.jpg', '.jpeg', '.png', '.heic']:
-       
-        return 'Invalid file type!'
+        if ext not in ['.jpg', '.jpeg', '.png', '.heic']:
+        
+            print("invalid type")
     
 
     notes = "..."
