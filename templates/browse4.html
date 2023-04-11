@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -41,21 +40,38 @@
           <th>Item ID</th>
           <th>Item Type</th>
           <th>Description</th>
+          <th>Image</th> <!-- Add a new column for the image -->
         </tr>
         {% for item_id, item_dict in result_dict.items() %}
-        <tr>
-          <td>{{ item_id }}</td>
-          <td>{{ item_dict["Item Type"] }}</td>
-          <td>
-            {% for attr_type, desc in item_dict.items() %}
-            {% if attr_type != 'Item Type' and attr_type != 'item_id' %}
-            {{ attr_type }}: {{ desc }}{% if not loop.last %}<br>{% endif %}
-            {% endif %}
-            {% endfor %}
-          </td>
-        </tr>
-        {% endfor %}
+  <tr>
+    <td>{{ item_id }}</td>
+    <td>{{ item_dict["Item Type"] }}</td>
+    <td>
+      {% for attr_type, desc in item_dict.items() %}
+        {% if attr_type != 'Item Type' and attr_type != 'item_id' and attr_type != 'Image' %}
+          {{ attr_type }}: {{ desc }}{% if not loop.last %}<br>{% endif %}
+        {% endif %}
+      {% endfor %}
+    </td>
+    <td>
+      
+        <img src="/static/styles/images/{{item_id}}.jpg" width="100" height="100">
+      
+    </td>
+    <td>
+      <form method="post" action="/delete_item/{{item_id}}">
+        <input type="submit" value="Edit" id="edit_{{item_id}}">
+        <input type="submit" value="Delete" id="delete_{{item_id}}">
+      </form>
+    </td>
+
+  </tr>
+{% endfor %}
+
       </table>
     </div>
+
+    
+    
   </body>
 </html>

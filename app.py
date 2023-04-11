@@ -8,7 +8,7 @@ from PIL import Image
 from io import BytesIO
 import traceback
 from psycopg2 import Binary
-import base64
+import glob
 
 
 from dotenv import load_dotenv
@@ -25,20 +25,32 @@ app = Flask(__name__)
 #                             password=os.getenv('DB_PASSWORD'))
 #     return conn 
 
+#connection to LostLocker AWS DB
 def get_db_connection():
     conn = psycopg2.connect(database='initial_db', user='postgres', password='notlostbutfound', host='my-ll-db.cw9eo1fjiaor.us-west-2.rds.amazonaws.com', port='5432')
     return conn  
 
 
+#login page route
 @app.route("/")
 def loginPage():
     
     return render_template('loginPage.html')
 
+
+#home page route
 @app.route("/home/")
 def home():
     return render_template('UI.html')
 
+
+
+@app.route('/images/<path:path>')
+def serve_static(path):
+    return app.send_static_file(path)
+
+
+#return all items, and their characteristics, that are in the locker (found items)
 @app.route("/api/getFilteredItems")
 def getFilteredItems():
     conn = get_db_connection()
@@ -59,7 +71,7 @@ def getFilteredItems():
     
       
 
-
+#this route renders and displays the basics of all items that are in the locker 
 @app.route("/browse/")
 def browse():
     conn = get_db_connection()
@@ -71,18 +83,10 @@ def browse():
     
     for item in item_ids:
 
-        cur.execute("select item_id, attributetype, description,itemtype,image from locker_items\
+        cur.execute("select item_id, attributetype, description,itemtype from locker_items\
                     where item_id =" + str(item[0]) + ";")
         
         items = cur.fetchall()
-
-        
-
-        # for item in items:
-        #     if item[0] in result_dict:
-        #         result_dict[item[0]].append(item[1])
-        #     else:
-        #         result_dict[item[0]] = [item[1]]
 
         
         for row in items:
@@ -96,26 +100,13 @@ def browse():
     
             result_dict[item_id][attr_type] = desc
         result_dict[item_id]['Item Type'] = row[3]
-
-        if row[4] is not None:
-            image_bytes = bytes(row[4])
-            image_data = base64.b64encode(image_bytes).decode('utf-8')
-            result_dict[item_id]['Image'] = image_data
-
-  
-
         
-        
-       
-
-    
-       
-    
-    
     cur.close()
     conn.close()
-    return render_template('browse3.html', result_dict=result_dict)
+    return render_template('browse4.html', result_dict=result_dict)
 
+
+#route to submit a lost item request
 @app.route('/lostitem/', methods=('GET', 'POST'))
 def lostitem():
     if request.method == 'POST':
@@ -127,17 +118,22 @@ def lostitem():
     else:
 
         return render_template('lost_claim.html')
+    
 
+#route to submit a found item request
 @app.route('/foundItem/', methods=('GET', 'POST', 'PUT'))
 def founditem():
     if request.method == 'POST' or request.method == 'PUT':
         status = 'Found'
+        
         process(status)
         return render_template('found_claim.html')
     else:
 
         return render_template('found_claim.html')
 
+
+#api that returns all item types from DB (used for dropdown)
 @app.route('/api/item-type')
 def ReturnJSON():
     conn = get_db_connection()
@@ -148,6 +144,7 @@ def ReturnJSON():
     return jsonify(items)
   
 
+#api with special query to return the attributes applicable to the specified item type (used for dropdown)
 @app.route('/api/returnAttributes')
 def returnAttributes():
     var1=  request.args.get('var1')
@@ -161,12 +158,13 @@ def returnAttributes():
     return jsonify(items)
 
 
+#processes user input from lost item, inserts into DB, matching function should also be called in here to find potential match
 def process(status):
     conn = get_db_connection()
     cur = conn.cursor()
    
+    #store all input into variables
     itemTypeID = request.form['available-items']
-    
     clothingType = request.form['clothing-types']
     brand = request.form['brands']    
     model = request.form['models']
@@ -177,9 +175,10 @@ def process(status):
     location = request.form['location']
     file = request.files['image-upload']
    
-    
+
+    print("entered!!")
+    #tries to open image file
     try:
-    # your code to open the image file
         buffer = BytesIO()
         file.save(buffer)
         buffer.seek(0)
@@ -189,6 +188,7 @@ def process(status):
         print(traceback.format_exc())
         return 'Invalid file type!' 
     
+
     filename = str(uuid.uuid4())
     ext = os.path.splitext(file.filename)[1].lower()
 
@@ -196,21 +196,29 @@ def process(status):
        
         return 'Invalid file type!'
     
-    filename = filename + ext
+
+    notes = "..."
+    user = "John"
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    cur.execute('INSERT INTO item (location, notes, submitted_by_user, datefound, status)'
+                      'VALUES (%s, %s, %s, %s, %s)',
+                        (location, notes, user, current_date, status))
+    
+
+
+
+    cur.execute("SELECT currval('item_item_id_seq')")
+    new_id = cur.fetchone()[0]
+
+    filename = str(new_id) + ext
     buffer.seek(0)  # Move the buffer cursor back to the beginning
-    with open(os.path.join('images', filename), 'wb') as f:
+    with open(os.path.join('static/styles/images', filename), 'wb') as f:
         f.write(buffer.read())  # Write the buffer contents to the file
 
-
-
-
-   
     
     if ext in ('.jpg', '.jpeg'):
-
         img.save(buffer, format='JPEG')
     elif ext in('.png'):
-
         img.save(buffer, format='PNG')
     image_data = buffer.getvalue()
 
@@ -221,48 +229,9 @@ def process(status):
 
     attributes = [clothingType, brand, model, color, size, stickers, book, location]
 
-    # cur.execute("SELECT itemType FROM itemType WHERE itemtype_id =" + itemType)
-    # itemType = cur.fetchone()[0]
-    # list_for_matching = [itemTypeID, clothingType, brand, model, color, size, stickers, book, location]
-    # matching(list_for_matching)
+  
     
 
-    
-    notes = "..."
-    user = "John"
-    current_date = datetime.now().strftime('%Y-%m-%d')
-    
-
-
-
-    cur.execute('INSERT INTO item (location, notes, submitted_by_user, datefound, status, image)'
-                        'VALUES (%s, %s, %s, %s, %s, %s)',
-                        (location, notes, user, current_date, status, image_data))
-    
-
-
-
-    
-    cur.execute("SELECT image FROM item WHERE item_id = 21")
-    result = cur.fetchone()
-    
-
-# Compare the retrieved image data with the original image data
-   
-    
-
-
-
-
-
-    
-    cur.execute("SELECT currval('item_item_id_seq')")
-    new_id = cur.fetchone()[0]
-
-    
-
-
-# Fetch the result and assign it to a variable
     
 
     for item in attributes:
@@ -271,10 +240,6 @@ def process(status):
             
             cur.execute("SELECT attributeType_id FROM attributeType WHERE description ='" + item + "'")
             result = cur.fetchone()[0]
-            
-
-            
-            
             cur.execute('INSERT INTO item_detail (item_id, itemType_id, attributetype_id)'
                         'VALUES (%s, %s, %s)',
                         (new_id, itemTypeID, result))
@@ -374,177 +339,6 @@ def matching(attributes_d):
 
 
 
-#     if attributes[0] == 3:
-#         #if device and brand and model match
-             
-#             #propose the matched item
-
-#     if attributes[0] == 4:
-#     #if bag and bagtype
-#         #if bagtype match and (brand or color) match
-            
-#             #propose matched item
-
-#     if attributes[0] == 5:
-#     #if book match
-#         #if input matches title or author
-
-
-# @app.route('/createItem/', methods=('GET', 'POST'))
-# def create():
-#     if request.method == 'POST':
-
-
-#         conn = get_db_connection()
-#         cur = conn.cursor()
-        
-#         print(request.form)
-
-        
-#         item = None
-#         clothing_type = None
-#         brand = None
-#         color = None
-#         location = "library"
-#         status = "lost"
-
-
-#         if request.form['item_type'] == "Clothing":
-#             print("entered")
-#             item = "Clothing"
-#             clothing_type = request.form['ClothingType']
-#             brand = request.form['ClothingBrand']
-#             color = request.form['Color']
-            
-
-#             if location == None:
-#                 lost_item_data = [item, clothing_type, brand, color]
-#             else:
-#                 lost_item_data = [item, clothing_type, brand, color, location]
-
-
-#             #chnge lost status
-#             cur.execute('Select * From Item Where item_type = %s and status = %s', (item, "lost"))
-#             typeMatch = cur.fetchall()
-
-            
-           
-            
-#             if typeMatch:
-#                 print(len(typeMatch))
-#                 found_items_dictionary = {}
-#                 similarity_dictionary = {}
-#                 itemMatchArrays = []
-
-#                 #for all found items of the same  item type (clothing, waterbottle)
-#                 for entry in typeMatch:
-#                     print(entry)
-#                     found_items_dictionary[entry[0]] = [entry[1], entry[2], entry[3], entry[4], entry[5]]
-#                 itemMatchArrays.append(found_items_dictionary)
-
-#                 print(lost_item_data)
-
-#                 for item_id in found_items_dictionary:
-#                     print(item_id)
-#                     common_characteristics = len(set(lost_item_data) & set(found_items_dictionary[item_id]))
-                   
-                    
-#                     similarity_dictionary[item_id] = common_characteristics
-
-
-#                 best_match = max(similarity_dictionary, key=similarity_dictionary.get)
-#                 print(best_match)
-#                 if best_match > 3:
-
-#                     return found_items_dictionary[best_match]
-
-           
-
-            
-
-
-
-                
-
-#         elif request.form['item_type'] == "waterbottle":
-#             item_type = request.form['item_type']
-            
-#             brand = request.form['brand']
-#             color = request.form['color']
-#             stickers = request.form['stickers']
-#             location = request.form['location']
-
-#             if location == None:
-#                 lost_item_data = [item_type, brand, color, stickers]
-#             else:
-#                 lost_item_data = [item_type, brand, color, stickers, location]
-
-#         elif request.form['item_type'] == "device":
-
-#             item_type = request.form['item_type']
-#             device_type = request.form['type2']
-#             brand = request.form['brand']
-#             color = request.form['color']
-#             stickers = request.form['stickers']
-#             location = request.form['location']
-
-#             if location == None:
-#                 lost_item_data = [item_type, device_type, brand, color, stickers]
-#             else:
-#                 lost_item_data = [item_type, device_type, brand, color, stickers, location]
-        
-
-#         elif request.form['item_type'] == "bag":
-
-#             item = request.form['item_type']
-#             bag_type = request.form['type2']
-#             brand = request.form['brand']
-#             color = request.form['color']
-#             stickers = request.form['stickers']
-#             location = request.form['location']
-
-#             if location == None:
-#                 lost_item_data = [item, bag_type, brand, color, stickers]
-#             else:
-#                 lost_item_data = [item, bag_type, brand, color, stickers, location]
-        
-
-#         elif request.form['item_type'] == "wallet/purse":
-
-#             item = request.form['item_type']
-#             walletpurse_type = request.form['type2']
-#             brand = request.form['brand']
-#             color = request.form['color']
-#             stickers = request.form['stickers']
-#             location = request.form['location']
-
-#             if location == None:
-#                 lost_item_data = [item, walletpurse_type, brand, color, stickers]
-#             else:
-#                 lost_item_data = [item, walletpurse_type, brand, color, stickers, location]
-        
-
-#         #elif request.form['item_type'] == "other":
-
-
-      
-#         #create characteristics array for jaccard comparison
-        
-
-         
-        
-#         cur.execute('INSERT INTO item (item_type, type2, brand, color, location, status)'
-#                         'VALUES (%s, %s, %s, %s, %s, %s)',
-#                         (item, clothing_type, brand, color, location, status))
-
-
-        
-#         conn.commit()
-#         cur.close()
-#         conn.close()
-#         return redirect(url_for('home'))
-#     return render_template('createitem.html')
-        
 
         
        
@@ -552,9 +346,50 @@ def matching(attributes_d):
     
     
     
-@app.route("/removeItem")
-def removeItem():
-    return "Removing item" 
+@app.route("/delete_item/<item_id>", methods=('GET', 'POST'))
+def delete_item(item_id):
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("DELETE FROM item WHERE item_id =" + str(item_id) + ";")
+    conn.commit()
+
+    folder_path = os.path.join(os.getcwd(), 'static', 'styles', 'images')
+    file_pattern = os.path.join(folder_path, f'{item_id}.*')
+    filename_list = glob.glob(file_pattern)
+    if filename_list:
+        os.remove(filename_list[0])
+        print("deleted")
+    else:
+        print("none")
+    
+
+    cur.execute('select DISTINCT item_id from locker_items;')
+    item_ids = cur.fetchall()
+  
+  
+    print(item_ids)
+    result_dict = {}
+    
+    for item in item_ids:
+        cur.execute("select item_id, attributetype, description,itemtype from locker_items\
+                    where item_id =" + str(item[0]) + ";")
+        items = cur.fetchall()
+        for row in items:   
+            item_id = row[0]
+            attr_type = row[1]
+            desc = row[2]
+            if item_id not in result_dict:
+                result_dict[item_id] = {}
+            result_dict[item_id][attr_type] = desc
+        result_dict[item_id]['Item Type'] = row[3]
+        
+    cur.close()
+    conn.close()
+    return render_template('browse4.html', result_dict=result_dict)
+
+   
 
 @app.route("/USD")
 def USD():

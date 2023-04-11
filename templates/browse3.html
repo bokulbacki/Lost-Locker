@@ -54,9 +54,9 @@
             {% endfor %}
           </td>
           <td>
-            {% if 'Image' in item_dict %} <!-- Check if 'Image' attribute exists in item_dict -->
-            <img src="data:image/jpeg;base64,{{ item_dict['Image'] }}" width="100" height="100"> <!-- Display the image using base64 encoded data -->
-            {% endif %}
+           <!--{% if 'Image' in item_dict %} {% endif %} --> <!-- Check if 'Image' attribute exists in item_dict -->
+            <img src="/static/styles/images/{{item_id}}.jpg" width="100" height="100"> <!-- Display the image using base64 encoded data -->
+            
           </td>
         </tr>
         {% endfor %}
