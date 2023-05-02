@@ -22,6 +22,7 @@
                   font-family: 'Roboto', sans-serif;
                   font-size: 15px;
                   font-weight: 400;
+                  /* background-color: #f2f2f2; */
       }
       /* table.fixedHeader-floating{
         background-color:white}
@@ -31,6 +32,10 @@
         position:absolute ;
         background-color:white}
       @media print{table.fixedHeader-floating{display:none}} */
+      .table-container .filters{
+        background: #dbd7d7;
+   
+      }
       body{
             height: 100vh;
             background: #e1edf9;
@@ -40,6 +45,7 @@
             background: #e1edf9;
       }
     
+      
        table {
         /* border-collapse: collapse;
         */
@@ -64,19 +70,21 @@
         padding: 8px;
       }
       */
-      th tr{
-        background-color: #f2f2f2;
+      .table-container{
+        background-color: #909395;
+        border-bottom: 1px solid #f2f2f2;
       }
       
       tr:nth-child(even) {
         background-color: #f2f2f2;
       }
       
-      tr:hover {
-        background-color: #ddd;
+      tbody:hover {
+        background-color: #e1edf9;
       } 
       tbody{
         border-bottom: 1px solid #10558d;
+        background-color: white;
       }
       .table-container {
         width: 80%;
@@ -85,31 +93,40 @@
         margin-top: 20px;
         margin-bottom: 20px;
       }
+      tr.head{
+        border-bottom: none;
+        width: 100%;
+        background-color: #dbd7d7;
+      }
     </style>
   </head>
   <body >
     <div class="table-container">
-      <table id="example" class="display" style="width:100%">
+      <table id="example" class="display" >
       <thead>
-        <tr>
+        <tr class="head">
           
           <th>Item ID</th>
           <th>Item Type</th>
           <th>Description</th>
           <th>Image</th> 
+          <th rowspan="1" colspan="1"></th> 
         </tr>
           <!-- <th class = "display sorting filters">  Item ID</th>
           <th class="sorting filters">Item Type</th>
           <th class="sorting filters">Description</th> -->
           <tr class="filters">
             <th rowspan="1" colspan="1">
-              <input type="text" placeholder="  Item ID">
+              <input type="text" placeholder="Filter by Item ID">
             </th>
             <th rowspan="1" colspan="1">
-              <input type="text" placeholder="Item Type">
+              <input type="text" placeholder="Filter by Item Type">
             </th>
             <th rowspan="1" colspan="1">
-              <input type="text" placeholder="Description">
+              <input type="text" placeholder="Filter by Description">
+            </th>
+            <th rowspan="2" colspan="2">
+              
             </th>
           </tr>
       </thead>
@@ -196,7 +213,7 @@
                         .on('change', function (e) {
                             // Get the search value
                             $(this).attr('title', $(this).val());
-                            var regexr = '({search})'; //$(this).parents('th').find('select').val();
+                            var regexr = '({search})'; $(this).parents('th').find('select').val();
  
                             var cursorPosition = this.selectionStart;
                             // Search the column for that value
