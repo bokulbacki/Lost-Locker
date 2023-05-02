@@ -204,7 +204,10 @@ width: 500px;
 
 
 
-        <script> 
+        <script>
+        document.querySelector("body").classList.toggle('active');
+        var hamburger = document.querySelector(".hamburger");
+        hamburger.style.display = "block"; 
         $(document).ready(function() {
 
             $('#clothing-types').hide();

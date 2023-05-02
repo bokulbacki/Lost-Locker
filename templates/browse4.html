@@ -1,21 +1,70 @@
+
+{% extends 'UI.html' %}
+
+{% block content %}
+
 <!DOCTYPE html>
 <html>
   <head>
     <title>Dictionary Display</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
     <style>
-      table {
-        border-collapse: collapse;
-        width: 100%;
+      *{
+        list-style: none;
+                  text-decoration: none;
+                  margin: 0;
+                  padding: 0;
+                  box-sizing: border-box;
+                  font-family: 'Roboto', sans-serif;
+                  font-size: 15px;
+                  font-weight: 400;
+      }
+      /* table.fixedHeader-floating{
+        background-color:white}
+      table.fixedHeader-floating.no-footer{
+        border-bottom-width:0}
+      table.fixedHeader-locked{
+        position:absolute ;
+        background-color:white}
+      @media print{table.fixedHeader-floating{display:none}} */
+      body{
+            height: 100vh;
+            background: #e1edf9;
+      }
+      tbody{
+           
+            background: #e1edf9;
+      }
+    
+       table {
+        /* border-collapse: collapse;
+        */
+        border: 1px solid #10558d;
+        background: #e1edf9;
+      }
+
+      #example_filter{
+        display: none;
+      }
+
+      #example_length{
         margin-top: 20px;
         margin-bottom: 20px;
       }
-      
+      /*
+      thead input {
+        width: 100%;
+    }
       th, td {
         text-align: left;
         padding: 8px;
       }
-      
-      th {
+      */
+      th tr{
         background-color: #f2f2f2;
       }
       
@@ -25,23 +74,46 @@
       
       tr:hover {
         background-color: #ddd;
+      } 
+      tbody{
+        border-bottom: 1px solid #10558d;
       }
-      
       .table-container {
         width: 80%;
         margin: 0 auto;
+        background: #f2f2f2;
+        margin-top: 20px;
+        margin-bottom: 20px;
       }
     </style>
   </head>
-  <body>
+  <body >
     <div class="table-container">
-      <table>
+      <table id="example" class="display" style="width:100%">
+      <thead>
         <tr>
+          
           <th>Item ID</th>
           <th>Item Type</th>
           <th>Description</th>
-          <th>Image</th> <!-- Add a new column for the image -->
+          <th>Image</th> 
         </tr>
+          <!-- <th class = "display sorting filters">  Item ID</th>
+          <th class="sorting filters">Item Type</th>
+          <th class="sorting filters">Description</th> -->
+          <tr class="filters">
+            <th rowspan="1" colspan="1">
+              <input type="text" placeholder="  Item ID">
+            </th>
+            <th rowspan="1" colspan="1">
+              <input type="text" placeholder="Item Type">
+            </th>
+            <th rowspan="1" colspan="1">
+              <input type="text" placeholder="Description">
+            </th>
+          </tr>
+      </thead>
+  <tbody>
         {% for item_id, item_dict in result_dict.items() %}
   <tr>
     <td>{{ item_id }}</td>
@@ -58,20 +130,101 @@
         <img src="/static/styles/images/{{item_id}}.jpg" width="100" height="100">
       
     </td>
+ 
     <td>
       <form method="post" action="/delete_item/{{item_id}}">
         <input type="submit" value="Edit" id="edit_{{item_id}}">
         <input type="submit" value="Delete" id="delete_{{item_id}}">
       </form>
     </td>
-
+  
   </tr>
+</tbody>
 {% endfor %}
 
       </table>
     </div>
+    
+  <script>
+   document.querySelector("body").classList.toggle('active');
+   var hamburger = document.querySelector(".hamburger");
+   hamburger.style.display = "block";
+   $(document).ready(function () {
+    // Setup - add a text input to each footer cell
+    // $('#example thead tr ')
+    //     .clone(true)
+    //     .addClass('filters')
+    //     .appendTo('#example thead');
 
-    
-    
+    // $('#example thead tr #type')
+    // .clone(true)
+    // .addClass('filters')
+    // .appendTo('#example thead tr');
+    // $('#example thead tr #id')
+    // .clone(true)
+    // .addClass('filters')
+    // .appendTo('#example thead tr');
+    // $('#example thead tr #desc')
+    // .clone(true)
+    // .addClass('filters')
+    // .appendTo('#example thead');
+
+    var table = $('#example').DataTable({
+        orderCellsTop: true,
+        fixedHeader: true,
+        initComplete: function () {
+            var api = this.api();
+ 
+            // For each column
+            api
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                    // Set the header cell to contain the input element
+                    var cell = $('.filters th').eq(
+                        $(api.column(colIdx).header()).index()
+                    );
+                    var title = $(cell).text();
+                    $(cell).html('<input type="text" placeholder="' + title + '" />');
+ 
+                    // On every keypress in this input
+                    $(
+                        'input',
+                        $('.filters th').eq($(api.column(colIdx).header()).index())
+                    )
+                        .off('keyup change')
+                        .on('change', function (e) {
+                            // Get the search value
+                            $(this).attr('title', $(this).val());
+                            var regexr = '({search})'; //$(this).parents('th').find('select').val();
+ 
+                            var cursorPosition = this.selectionStart;
+                            // Search the column for that value
+                            api
+                                .column(colIdx)
+                                .search(
+                                    this.value != ''
+                                        ? regexr.replace('{search}', '(((' + this.value + ')))')
+                                        : '',
+                                    this.value != '',
+                                    this.value == ''
+                                )
+                                .draw();
+                        })
+                        .on('keyup', function (e) {
+                            e.stopPropagation();
+ 
+                            $(this).trigger('change');
+                            $(this)
+                                .focus()[0]
+                                .setSelectionRange(cursorPosition, cursorPosition);
+                        });
+                });
+        },
+    });
+});
+  </script> 
+  
   </body>
 </html>
+{% endblock %}
