@@ -18,8 +18,8 @@ May need to run:
 conn = psycopg2.connect(
         host="localhost",
         database="postgres",
-        user=os.getenv("bberube"),
-        password=os.getenv("macyB2011!"))
+        user=os.getenv("username"),
+        password=os.getenv("password"))
 
 # Open a cursor to perform database operations
 cur = conn.cursor()
