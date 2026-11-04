@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: lostlocker
+      POSTGRES_USER: lostlocker
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lostlocker -d lostlocker"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      # Points the app at the db service above; overrides DATABASE_URL from .env
+      DATABASE_URL: postgresql://lostlocker:${DB_PASSWORD}@db:5432/lostlocker
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploads:/data/uploads
+    # Apply migrations, then start the server
+    command: sh -c "flask --app lostlocker migrate && gunicorn --bind 0.0.0.0:8000 --workers 3 wsgi:app"
+
+volumes:
+  dbdata:
+  uploads:

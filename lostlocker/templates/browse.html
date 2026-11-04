@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Browse found items · Lost Locker{% endblock %}
+{% block content %}
+<h1>Found items</h1>
+<p class="muted">Everything that's been turned in and is waiting for its owner.</p>
+
+<form class="filters" method="get" role="search">
+  <div>
+    <label for="q">Search <span class="hint">Brand, color, title…</span></label>
+    <input id="q" name="q" type="search" value="{{ q }}" maxlength="100">
+  </div>
+  <div>
+    <label for="type">Kind of item</label>
+    <select id="type" name="type">
+      <option value="">All</option>
+      {% for t in types %}
+        <option value="{{ t.itemtype_id }}" {{ 'selected' if type_id == t.itemtype_id }}>{{ t.itemtype }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="go"><button type="submit" class="primary">Search</button></div>
+</form>
+
+<p class="muted" role="status">{{ total }} item{{ '' if total == 1 else 's' }}{% if q or type_id %} found{% endif %}.</p>
+
+{% if items %}
+  <h2 class="sr-only">Found items</h2>
+  <div class="items">
+    {% for item in items %}{% include '_item.html' %}{% endfor %}
+  </div>
+  {% if pages > 1 %}
+    <nav class="pager" aria-label="Pages">
+      {% if page > 1 %}<a class="button" href="{{ url_for('items.browse', q=q or None, type=type_id, page=page - 1) }}">&larr; Previous</a>{% endif %}
+      <span>Page {{ page }} of {{ pages }}</span>
+      {% if page < pages %}<a class="button" href="{{ url_for('items.browse', q=q or None, type=type_id, page=page + 1) }}">Next &rarr;</a>{% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <div class="card">
+    <h2 style="margin-top:0">Nothing here{% if q or type_id %} matches that{% endif %}</h2>
+    <p>Lost something? Tell us what it looks like and we'll email you when it turns up.</p>
+    <a class="button primary" href="{{ url_for('report.lost') }}">I lost something</a>
+  </div>
+{% endif %}
+{% endblock %}

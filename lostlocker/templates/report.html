@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'I lost something' if kind == 'Lost' else 'I found something' }} · Lost Locker{% endblock %}
+{% macro err(field) -%}
+  {%- for f, m in (errors or []) if f == field %}<p class="field-error" id="{{ field }}-error">{{ m }}</p>{% endfor -%}
+{%- endmacro %}
+{% macro invalid(field) -%}
+  {%- for f, m in (errors or []) if f == field %} aria-invalid="true" aria-describedby="{{ field }}-error"{% endfor -%}
+{%- endmacro %}
+
+{% block content %}
+<h1>{{ 'I lost something' if kind == 'Lost' else 'I found something' }}</h1>
+
+{% if not itemtype %}
+  <p class="stepline"><span class="pill">Step 1 of 2</span> What kind of item is it?</p>
+  <div class="grid type-grid">
+    {% for t in types %}
+      <a class="tile" href="{{ url_for(endpoint, type=t.itemtype_id, loc=request.args.get('loc')) }}">
+        <span class="ico" aria-hidden="true">{{ t.icon }}</span>
+        <strong>{{ t.itemtype }}</strong>
+      </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="stepline"><span class="pill">Step 2 of 2</span> {{ icon }} {{ itemtype.itemtype }}
+    <a href="{{ url_for(endpoint, loc=request.args.get('loc')) }}">Change<span class="sr-only"> item type</span></a></p>
+
+  {% if errors %}
+  <div class="error-summary" id="error-summary" role="alert" tabindex="-1">
+    <h2>Please fix {{ errors|length }} thing{{ '' if errors|length == 1 else 's' }}</h2>
+    <ul>{% for f, m in errors %}<li><a href="#{{ f }}">{{ m }}</a></li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  <form method="post" action="{{ url_for(endpoint) }}" enctype="multipart/form-data" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="itemtype_id" value="{{ itemtype.itemtype_id }}">
+
+    <div class="form-section">
+      <h2>What does it look like?</h2>
+      <p class="hint">Pick what you know. Skip anything you're not sure about. Details beyond the location help us find a match.</p>
+
+      {% if itemtype.requires_title %}
+      <div class="field">
+        <label for="book_title">Title of the book</label>
+        <input id="book_title" name="book_title" type="text" maxlength="200" value="{{ form.get('book_title', '') }}"{{ invalid('book_title') }}>
+        {{ err('book_title') }}
+      </div>
+      {% endif %}
+
+      {% for group in groups if group.name != 'Location' %}
+      {% set field = 'attr-' ~ group.slug %}
+      <div class="field" id="{{ field }}">
+        {% if group.widget == 'select' %}
+          <label for="{{ field }}-select">{{ group.label }}</label>
+          <select id="{{ field }}-select" name="attr:{{ group.name }}"{{ invalid(field) }}>
+            <option value="">Not sure / skip</option>
+            {% for o in group.options %}
+              <option value="{{ o.id }}" {{ 'selected' if selected.get(group.name) == o.id }}>{{ o.value }}</option>
+            {% endfor %}
+          </select>
+        {% else %}
+          <fieldset{{ invalid(field) }}>
+            <legend class="label">{{ group.label }} <span class="hint" style="display:inline">(optional)</span></legend>
+            <div class="choices">
+              {% for o in group.options %}
+                {% if group.widget == 'swatch' %}
+                <label class="swatch sw-{{ o.slug }}"><input type="radio" name="attr:{{ group.name }}" value="{{ o.id }}" {{ 'checked' if selected.get(group.name) == o.id }}><span class="label"><span class="dot" aria-hidden="true"></span>{{ o.value }}</span></label>
+                {% else %}
+                <label class="chip"><input type="radio" name="attr:{{ group.name }}" value="{{ o.id }}" {{ 'checked' if selected.get(group.name) == o.id }}><span>{{ o.value }}</span></label>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </fieldset>
+        {% endif %}
+        {{ err(field) }}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="form-section">
+      <h2>{{ 'Where and when did you lose it?' if kind == 'Lost' else 'Where and when did you find it?' }}</h2>
+      <div class="field-row">
+        {% for group in groups if group.name == 'Location' %}
+        <div class="field">
+          <label for="attr-location-select">Place <span class="hint">{{ 'Your best guess is fine.' if kind == 'Lost' else 'Where was it when you found it?' }}</span></label>
+          <select id="attr-location-select" name="attr:Location">
+            <option value="">Not sure / skip</option>
+            {% for o in group.options %}
+              <option value="{{ o.id }}" {{ 'selected' if selected.get(group.name) == o.id }}>{{ o.value }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% endfor %}
+        <div class="field">
+          <label for="happened_on">Day <span class="hint">Leave blank for today.</span></label>
+          <input id="happened_on" name="happened_on" type="date" max="{{ today }}" value="{{ form.get('happened_on', '') }}"{{ invalid('happened_on') }}>
+          {{ err('happened_on') }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>Photo and notes</h2>
+      <div class="field">
+        <label for="image-upload">Photo <span class="hint">Optional. JPG, PNG or WebP, up to 8&nbsp;MB. A phone photo works.</span></label>
+        <input id="image-upload" name="image-upload" type="file" accept="image/jpeg,image/png,image/webp"{{ invalid('image-upload') }}>
+        <img id="photo-preview" class="photo-preview" alt="Preview of the photo you chose" hidden>
+        {{ err('image-upload') }}
+      </div>
+      <div class="field">
+        <label for="notes">Anything else that would help? <span class="hint">Optional. Scratches, stickers, what's inside.</span></label>
+        <textarea id="notes" name="notes" rows="3" maxlength="500"{{ invalid('notes') }}>{{ form.get('notes', '') }}</textarea>
+        {{ err('notes') }}
+      </div>
+    </div>
+
+    {% if kind == 'Found' %}
+    <div class="form-section">
+      <h2>Getting it back to its owner</h2>
+      <div class="field">
+        <fieldset{{ invalid('held_at') }} id="held_at">
+          <legend class="label">Where is it now? <span class="hint" style="display:inline">(optional)</span></legend>
+          <div class="choices">
+            {% for opt in held_options %}
+            <label class="chip"><input type="radio" name="held_at" value="{{ opt }}" {{ 'checked' if form.get('held_at') == opt }}><span>{{ opt }}</span></label>
+            {% endfor %}
+          </div>
+        </fieldset>
+        {{ err('held_at') }}
+      </div>
+      <div class="field">
+        <label for="verify_question">A question only the owner could answer <span class="hint">Optional, and nobody sees your answer until they claim it. For example "What's the lock screen picture?" Leave blank to ask them to describe something not shown in the photo.</span></label>
+        <input id="verify_question" name="verify_question" type="text" maxlength="200" value="{{ form.get('verify_question', '') }}"{{ invalid('verify_question') }}>
+        {{ err('verify_question') }}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="sticky-submit">
+      <button type="submit" class="primary big">{{ 'Save my lost item' if kind == 'Lost' else 'Add to the locker' }}</button>
+      <a href="{{ url_for('items.home') }}">Cancel</a>
+    </div>
+  </form>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Home · Lost Locker{% endblock %}
+{% block content %}
+<h1>Hi {{ g.user.name.split()[0] }}</h1>
+
+{% if attention or approved %}
+<h2 style="margin-top:0">Needs your attention</h2>
+<ul class="attention">
+  {% for a in attention %}
+  <li>
+    <p><strong>{{ a.item.name }}</strong><br>{{ a.text }}</p>
+    <a class="button primary" href="{{ url_for('items.detail', item_id=a.item.item_id) }}">{{ a.action }}<span class="sr-only">: {{ a.item.name }}</span></a>
+  </li>
+  {% endfor %}
+  {% for c in approved %}
+  <li>
+    <p><strong>Your claim was approved.</strong><br>See how to get your item back.</p>
+    <a class="button primary" href="{{ url_for('items.detail', item_id=c.item_id) }}">Get it back</a>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if waiting_on %}
+<p class="muted">You're waiting to hear back on {{ waiting_on|length }} claim{{ '' if waiting_on|length == 1 else 's' }}.
+  {% for c in waiting_on %}<a href="{{ url_for('items.detail', item_id=c.item_id) }}">View claim {{ loop.index }}</a>{{ ', ' if not loop.last }}{% endfor %}
+</p>
+{% endif %}
+
+<h2 {% if not (attention or approved) %}style="margin-top:0"{% endif %}>What would you like to do?</h2>
+<div class="grid">
+  <a class="tile" href="{{ url_for('report.lost') }}">
+    <span class="ico" aria-hidden="true">&#128269;</span>
+    <strong>I lost something</strong>
+    <span class="desc">We'll watch for it and email you.</span>
+  </a>
+  <a class="tile" href="{{ url_for('report.found') }}">
+    <span class="ico" aria-hidden="true">&#127873;</span>
+    <strong>I found something</strong>
+    <span class="desc">Help it get back to its owner.</span>
+  </a>
+  <a class="tile" href="{{ url_for('items.browse') }}">
+    <span class="ico" aria-hidden="true">&#128230;</span>
+    <strong>Browse found items</strong>
+    <span class="desc">{{ waiting }} waiting to be claimed.</span>
+  </a>
+  <a class="tile" href="{{ url_for('items.my_items') }}">
+    <span class="ico" aria-hidden="true">&#128100;</span>
+    <strong>My items</strong>
+    <span class="desc">{{ mine_count }} open report{{ '' if mine_count == 1 else 's' }}.</span>
+  </a>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Log in · Lost Locker{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Log in</h1>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="next" value="{{ next }}">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" value="{{ email }}" autocomplete="email" required autofocus>
+    <label for="password">Password</label>
+    <div class="pwd-wrap">
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button type="button" data-toggle-password="password" aria-pressed="false" aria-label="Show password" hidden>Show</button>
+    </div>
+    <div class="actions"><button type="submit" class="primary big">Log in</button></div>
+  </form>
+  <p style="margin-top:1.25rem">New here? <a href="{{ url_for('auth.register', next=next or None) }}">Create an account</a>. It takes 20 seconds.</p>
+</div>
+{% endblock %}
