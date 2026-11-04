@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Lost Locker{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('items.home') }}">Lost Locker</a>
+    {% if g.user %}
+    <nav aria-label="Main">
+      <a href="{{ url_for('items.home') }}">Home</a>
+      <a href="{{ url_for('items.my_items') }}">My items</a>
+      <a href="{{ url_for('items.lost_claim') }}">I lost something</a>
+      <a href="{{ url_for('items.found_claim') }}">I found something</a>
+      <a href="{{ url_for('items.browse') }}">Browse found items</a>
+    </nav>
+    <form class="logout" method="post" action="{{ url_for('auth.logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <span class="who">{{ g.user.name }}</span>
+      <button type="submit" class="link">Log out</button>
+    </form>
+    {% endif %}
+  </header>
+
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    Lost Locker is a student project and is not affiliated with the University of San Diego.
+  </footer>
+</body>
+</html>

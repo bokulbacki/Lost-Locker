@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}{{ item.itemtype }} · Lost Locker{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>
+    {{ item.itemtype }}{% if item.book_title %}: {{ item.book_title }}{% endif %}
+    <span class="badge {{ item.status|lower }}">{{ item.status }}</span>
+  </h1>
+
+  {% if item.image_filename %}
+    <img class="photo" src="{{ url_for('items.image', filename=item.image_filename) }}" alt="Photo of the {{ item.itemtype|lower }}">
+  {% endif %}
+
+  <dl>
+    {% for d in item.details %}<dt>{{ d.label }}</dt><dd>{{ d.value }}</dd>{% endfor %}
+    {% if item.notes %}<dt>Notes</dt><dd>{{ item.notes }}</dd>{% endif %}
+    <dt>Reported</dt><dd>{{ item.date_reported.strftime('%b %-d, %Y') }}</dd>
+  </dl>
+
+  {% if item.reported_as == 'Found' and item.status == 'Found' and not can_manage %}
+    <div class="notice"><strong>Is this yours?</strong> {{ claim_instructions }}</div>
+  {% endif %}
+
+  {% if can_manage %}
+    <div class="actions">
+      {% if item.status != 'Returned' %}
+        <form method="post" action="{{ url_for('items.mark_returned', item_id=item.item_id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit">{{ 'I found it' if item.reported_as == 'Lost' else 'Mark as returned to owner' }}</button>
+        </form>
+      {% endif %}
+      <form method="post" action="{{ url_for('items.delete', item_id=item.item_id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="danger">Delete report</button>
+      </form>
+    </div>
+  {% endif %}
+</div>
+
+{% if item.reported_as == 'Lost' and item.status == 'Lost' %}
+  <h2>Possible matches</h2>
+  {% if matches %}
+    <div class="items">
+      {% for item in matches %}{% include '_item.html' %}{% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">No matches yet. We'll email you if something similar is turned in.</p>
+  {% endif %}
+{% endif %}
+{% endblock %}

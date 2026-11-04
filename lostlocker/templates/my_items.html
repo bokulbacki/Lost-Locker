@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}My items · Lost Locker{% endblock %}
+{% block content %}
+<h1>My items</h1>
+{% if items %}
+  <div class="items">
+    {% for item in items %}{% set show_status = true %}{% include '_item.html' %}{% endfor %}
+  </div>
+{% else %}
+  <p>You haven't reported anything yet.</p>
+  <p><a class="button" href="{{ url_for('items.lost_claim') }}">I lost something</a>
+     <a class="button" href="{{ url_for('items.found_claim') }}">I found something</a></p>
+{% endif %}
+{% endblock %}

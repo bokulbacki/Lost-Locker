@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Lost Locker{% endblock %}
+{% block content %}
+<h1>Hi {{ g.user.name }}</h1>
+<div class="grid">
+  <a class="tile" href="{{ url_for('items.lost_claim') }}">
+    <strong>I lost something</strong>
+    <span>Describe it and we'll watch for it. You'll get an email if something similar is turned in.</span>
+  </a>
+  <a class="tile" href="{{ url_for('items.found_claim') }}">
+    <strong>I found something</strong>
+    <span>Add it to the locker so its owner can find it.</span>
+  </a>
+  <a class="tile" href="{{ url_for('items.browse') }}">
+    <strong>Browse found items</strong>
+    <span>{{ waiting }} item{{ '' if waiting == 1 else 's' }} waiting to be claimed.</span>
+  </a>
+  <a class="tile" href="{{ url_for('items.my_items') }}">
+    <strong>My items</strong>
+    <span>{{ mine }} open report{{ '' if mine == 1 else 's' }}{% if possible %}, {{ possible }} possible match{{ '' if possible == 1 else 'es' }}{% endif %}.</span>
+  </a>
+</div>
+{% endblock %}
