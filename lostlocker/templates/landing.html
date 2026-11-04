@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Lost Locker · Find what you lost{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Lost something on campus?<br>Found something?</h1>
+  <p class="lead">Lost Locker connects people who lose things with people who find them. It takes about a minute.</p>
+  <div class="cta">
+    <a class="button primary big" href="{{ url_for('report.lost') }}">I lost something</a>
+    <a class="button big" href="{{ url_for('report.found') }}">I found something</a>
+  </div>
+  <p class="muted" style="margin-top:1.25rem">
+    {% if waiting %}{{ waiting }} item{{ '' if waiting == 1 else 's' }} {{ 'is' if waiting == 1 else 'are' }} waiting for their owners right now.{% endif %}
+  </p>
+</section>
+
+<h2>How it works</h2>
+<ol class="how">
+  <li><strong>Tell us what it looks like</strong><span>Tap a few details: what it is, the color, where. No long forms.</span></li>
+  <li><strong>We watch for matches</strong><span>When something similar is turned in, you get an email.</span></li>
+  <li><strong>Prove it's yours, get it back</strong><span>Answer one question only the owner would know. The finder says yes and you arrange pick-up.</span></li>
+</ol>
+
+<p class="muted">You'll create a free account so owners and finders can be put in touch safely. We only share your name and email after a claim is approved.</p>
+{% endblock %}

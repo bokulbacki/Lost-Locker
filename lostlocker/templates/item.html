@@ -1,24 +1,79 @@
 {% extends 'base.html' %}
-{% block title %}{{ item.itemtype }} · Lost Locker{% endblock %}
+{% block title %}{{ item.name }} · Lost Locker{% endblock %}
 {% block content %}
-<div class="card">
-  <h1>
-    {{ item.itemtype }}{% if item.book_title %}: {{ item.book_title }}{% endif %}
-    <span class="badge {{ item.status|lower }}">{{ item.status }}</span>
-  </h1>
+<p><a href="{{ url_for('items.my_items' if can_manage else 'items.browse') }}">&larr; Back<span class="sr-only"> to the list</span></a></p>
 
-  {% if item.image_filename %}
-    <img class="photo" src="{{ url_for('items.image', filename=item.image_filename) }}" alt="Photo of the {{ item.itemtype|lower }}">
+<div class="card">
+  <h1>{{ item.name }} <span class="badge {{ item.status|lower }}">{{ item.status }}</span></h1>
+
+  {% if steps %}
+  <ol class="steps" aria-label="Progress">
+    {% for s in steps %}
+    <li class="{{ s.state }}" {% if s.state == 'current' %}aria-current="step"{% endif %}>{{ s.name }}{% if s.state == 'done' %}<span class="sr-only"> (done)</span>{% endif %}</li>
+    {% endfor %}
+  </ol>
   {% endif %}
 
-  <dl>
+  {% if item.image_filename %}
+    <img class="photo" src="{{ url_for('items.image', filename=item.image_filename) }}" alt="Photo of the {{ item.name }}">
+  {% endif %}
+
+  <dl class="facts">
     {% for d in item.details %}<dt>{{ d.label }}</dt><dd>{{ d.value }}</dd>{% endfor %}
     {% if item.notes %}<dt>Notes</dt><dd>{{ item.notes }}</dd>{% endif %}
-    <dt>Reported</dt><dd>{{ item.date_reported.strftime('%b %-d, %Y') }}</dd>
+    <dt>{{ 'Lost on' if item.reported_as == 'Lost' else 'Found on' }}</dt><dd>{{ item.happened_on.strftime('%A, %b %-d, %Y') }}</dd>
+    {% if item.held_at %}<dt>Right now</dt><dd>{{ item.held_at }}</dd>{% endif %}
   </dl>
 
-  {% if item.reported_as == 'Found' and item.status == 'Found' and not can_manage %}
-    <div class="notice"><strong>Is this yours?</strong> {{ claim_instructions }}</div>
+  {# ---------------- someone else's found item: claim panel ---------------- #}
+  {% if item.reported_as == 'Found' and not can_manage %}
+    {% if my_claim and my_claim.status == 'approved' %}
+      <div class="notice">
+        <h2>Your claim was approved</h2>
+        <p>Contact <strong>{{ finder.name }}</strong> at <a href="mailto:{{ finder.email }}">{{ finder.email }}</a> to arrange pick-up.
+          {% if item.held_at %}They said: &ldquo;{{ item.held_at }}.&rdquo;{% endif %}</p>
+        <p class="small muted">{{ claim_instructions }}</p>
+      </div>
+    {% elif my_claim and my_claim.status == 'pending' %}
+      <div class="notice"><h2>Claim sent</h2><p>The person who found this will review your answer. We'll email you when they decide.</p></div>
+    {% elif my_claim %}
+      <div class="notice"><h2>Claim not approved</h2><p>The finder couldn't confirm this is yours. You can still <a href="{{ url_for('items.browse') }}">browse other found items</a>.</p></div>
+    {% elif item.status == 'Found' %}
+      <form method="post" action="{{ url_for('claims.create', item_id=item.item_id) }}" id="claim" class="notice">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <h2>Is this yours?</h2>
+        <label for="answer" style="margin-top:0">{{ question }}</label>
+        <textarea id="answer" name="answer" rows="3" maxlength="500" required aria-describedby="answer-hint"></textarea>
+        <span class="hint" id="answer-hint">The finder reads your answer and decides. Your name and email are shared only if they approve.</span>
+        <div class="actions"><button type="submit" class="primary">This is mine</button></div>
+      </form>
+    {% endif %}
+  {% endif %}
+
+  {# ---------------- the finder reviewing claims ---------------- #}
+  {% if claims %}
+    <h2>Claims ({{ claims|length }})</h2>
+    {% for c in claims %}
+    <div class="notice">
+      <h3>{{ c.name }} <span class="badge {{ 'found' if c.status == 'approved' else ('alert' if c.status == 'pending' else '') }}">{{ c.status|capitalize }}</span></h3>
+      <p class="small muted">{{ question }}</p>
+      <p><strong>Their answer:</strong> {{ c.answer }}</p>
+      {% if c.status == 'pending' %}
+      <div class="actions">
+        <form method="post" action="{{ url_for('claims.decide', claim_id=c.claim_id, decision='approve') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="primary">Yes, it's theirs<span class="sr-only">: {{ c.name }}</span></button>
+        </form>
+        <form method="post" action="{{ url_for('claims.decide', claim_id=c.claim_id, decision='decline') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit">No<span class="sr-only">, decline {{ c.name }}</span></button>
+        </form>
+      </div>
+      {% elif c.status == 'approved' %}
+      <p class="small">They can now see your name and email. Their email: <a href="mailto:{{ c.email }}">{{ c.email }}</a></p>
+      {% endif %}
+    </div>
+    {% endfor %}
   {% endif %}
 
   {% if can_manage %}
@@ -26,12 +81,12 @@
       {% if item.status != 'Returned' %}
         <form method="post" action="{{ url_for('items.mark_returned', item_id=item.item_id) }}">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit">{{ 'I found it' if item.reported_as == 'Lost' else 'Mark as returned to owner' }}</button>
+          <button type="submit">{{ 'I got it back' if item.reported_as == 'Lost' else 'Mark as returned' }}</button>
         </form>
       {% endif %}
       <form method="post" action="{{ url_for('items.delete', item_id=item.item_id) }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="danger">Delete report</button>
+        <button type="submit" class="danger">Delete this report<span class="sr-only">: {{ item.name }}</span></button>
       </form>
     </div>
   {% endif %}
@@ -40,11 +95,12 @@
 {% if item.reported_as == 'Lost' and item.status == 'Lost' %}
   <h2>Possible matches</h2>
   {% if matches %}
+    <p class="muted">These were turned in by other students. Open one to claim it.</p>
     <div class="items">
       {% for item in matches %}{% include '_item.html' %}{% endfor %}
     </div>
   {% else %}
-    <p class="muted">No matches yet. We'll email you if something similar is turned in.</p>
+    <p class="muted">Nothing yet. We'll email you the moment something similar is turned in.</p>
   {% endif %}
 {% endif %}
 {% endblock %}

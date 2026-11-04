@@ -9,9 +9,12 @@
     <label for="email">Email</label>
     <input id="email" name="email" type="email" value="{{ email }}" autocomplete="email" required autofocus>
     <label for="password">Password</label>
-    <input id="password" name="password" type="password" autocomplete="current-password" required>
-    <button type="submit" class="primary">Log in</button>
+    <div class="pwd-wrap">
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button type="button" data-toggle-password="password" aria-pressed="false" aria-label="Show password" hidden>Show</button>
+    </div>
+    <div class="actions"><button type="submit" class="primary big">Log in</button></div>
   </form>
-  <p class="muted">New here? <a href="{{ url_for('auth.register') }}">Create an account</a>.</p>
+  <p style="margin-top:1.25rem">New here? <a href="{{ url_for('auth.register', next=next or None) }}">Create an account</a>. It takes 20 seconds.</p>
 </div>
 {% endblock %}

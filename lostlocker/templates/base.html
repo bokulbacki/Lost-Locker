@@ -3,29 +3,71 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
   <title>{% block title %}Lost Locker{% endblock %}</title>
+  <script src="{{ url_for('static', filename='js/theme-init.js') }}"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
   <header class="topbar">
-    <a class="brand" href="{{ url_for('items.home') }}">Lost Locker</a>
+    <a class="brand" href="{{ url_for('items.home') }}"><span class="mark" aria-hidden="true">&#128273;</span> Lost Locker</a>
+
     {% if g.user %}
-    <nav aria-label="Main">
-      <a href="{{ url_for('items.home') }}">Home</a>
-      <a href="{{ url_for('items.my_items') }}">My items</a>
-      <a href="{{ url_for('items.lost_claim') }}">I lost something</a>
-      <a href="{{ url_for('items.found_claim') }}">I found something</a>
-      <a href="{{ url_for('items.browse') }}">Browse found items</a>
+    {% set ep = request.endpoint or '' %}
+    <nav class="mainnav" aria-label="Main">
+      <a href="{{ url_for('items.home') }}" {% if ep == 'items.home' %}aria-current="page"{% endif %}><span class="ico" aria-hidden="true">&#127968;</span> Home</a>
+      <a href="{{ url_for('report.lost') }}" {% if ep == 'report.lost' %}aria-current="page"{% endif %}><span class="ico" aria-hidden="true">&#128269;</span> I lost</a>
+      <a href="{{ url_for('report.found') }}" {% if ep == 'report.found' %}aria-current="page"{% endif %}><span class="ico" aria-hidden="true">&#127873;</span> I found</a>
+      <a href="{{ url_for('items.browse') }}" {% if ep == 'items.browse' %}aria-current="page"{% endif %}><span class="ico" aria-hidden="true">&#128230;</span> Browse</a>
+      <a href="{{ url_for('items.my_items') }}" {% if ep == 'items.my_items' %}aria-current="page"{% endif %}><span class="ico" aria-hidden="true">&#128100;</span> My items</a>
     </nav>
-    <form class="logout" method="post" action="{{ url_for('auth.logout') }}">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <span class="who">{{ g.user.name }}</span>
-      <button type="submit" class="link">Log out</button>
-    </form>
     {% endif %}
+
+    <div class="topbar-actions">
+      <details class="settings">
+        <summary><span aria-hidden="true">Aa</span> Display</summary>
+        <div class="settings-panel" id="settings-panel" role="group" aria-label="Display settings">
+          <fieldset>
+            <legend>Theme</legend>
+            <div class="choices">
+              <label class="chip"><input type="radio" name="theme" value="" checked><span>Match my device</span></label>
+              <label class="chip"><input type="radio" name="theme" value="light"><span>Light</span></label>
+              <label class="chip"><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Text size</legend>
+            <div class="choices">
+              <label class="chip"><input type="radio" name="text" value="" checked><span>Standard</span></label>
+              <label class="chip"><input type="radio" name="text" value="large"><span>Large</span></label>
+              <label class="chip"><input type="radio" name="text" value="xlarge"><span>Extra large</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Contrast</legend>
+            <div class="choices">
+              <label class="chip"><input type="radio" name="contrast" value="" checked><span>Standard</span></label>
+              <label class="chip"><input type="radio" name="contrast" value="high"><span>High</span></label>
+            </div>
+          </fieldset>
+          <button type="button" id="settings-reset">Reset to defaults</button>
+        </div>
+      </details>
+      {% if g.user %}
+        <form method="post" action="{{ url_for('auth.logout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="link">Log out<span class="sr-only"> {{ g.user.name }}</span></button>
+        </form>
+      {% else %}
+        <a class="button" href="{{ url_for('auth.login') }}">Log in</a>
+      {% endif %}
+    </div>
   </header>
 
-  <main>
+  <main id="main" tabindex="-1">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% for category, message in messages %}
         <div class="flash {{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</div>

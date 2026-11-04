@@ -1,24 +1,23 @@
-{# One item as a card. Expects `item`. Optional: show_status, show_actions. #}
+{# One item as a card. Expects `item`. Optional: show_status. #}
 <article class="item">
-  <a class="thumb" href="{{ url_for('items.detail', item_id=item.item_id) }}">
+  <div class="thumb">
     {% if item.image_filename %}
-      <img src="{{ url_for('items.image', filename=item.image_filename) }}" alt="Photo of the {{ item.itemtype|lower }}" loading="lazy">
+      <img src="{{ url_for('items.image', filename=item.image_filename) }}" alt="" loading="lazy">
     {% else %}
-      <span class="noimg">No photo</span>
+      <span class="noimg"><span class="ico" aria-hidden="true">{{ icon_for(item.itemtype) }}</span>No photo</span>
     {% endif %}
-  </a>
+  </div>
   <div class="body">
-    <h3>
-      <a href="{{ url_for('items.detail', item_id=item.item_id) }}">
-        {{ item.itemtype }}{% if item.book_title %}: {{ item.book_title }}{% endif %}
-      </a>
+    <h3><a href="{{ url_for('items.detail', item_id=item.item_id) }}">{{ item.name }}</a></h3>
+    <p class="meta">
+      {% set loc = item.details|selectattr('group', 'equalto', 'Location')|map(attribute='value')|first %}
+      {{ item.reported_as }}{% if loc %} at {{ loc }}{% endif %} · {{ item.happened_on.strftime('%b %-d') }}
+    </p>
+    {% if show_status or item.badge_note %}
+    <p class="badges">
       {% if show_status %}<span class="badge {{ item.status|lower }}">{{ item.status }}</span>{% endif %}
-    </h3>
-    <dl>
-      {% for d in item.details %}
-        <dt>{{ d.label }}</dt><dd>{{ d.value }}</dd>
-      {% endfor %}
-    </dl>
-    <p class="muted">Reported {{ item.date_reported.strftime('%b %-d, %Y') }}</p>
+      {% if item.badge_note %}<span class="badge alert">{{ item.badge_note }}</span>{% endif %}
+    </p>
+    {% endif %}
   </div>
 </article>

@@ -1,4 +1,4 @@
-"""Pages for reporting lost/found items, browsing, and managing your own reports."""
+"""Pages for the dashboard, browsing, one item, and managing your own reports."""
 
 from __future__ import annotations
 
@@ -18,18 +18,14 @@ from flask import (
 from . import catalog
 from .auth import login_required
 from .db import get_db
-from .matching import record_matches
-from .notifications import notify_matches
-from .uploads import UploadError, delete_image, is_stored_name, save_image
+from .uploads import delete_image, is_stored_name
 
 bp = Blueprint("items", __name__)
 
-MAX_NOTES = 500
-MAX_TITLE = 200
-
 _ITEM_SELECT = (
     "SELECT i.item_id, i.status, i.reported_as, i.itemtype_id, it.itemtype, i.book_title,"
-    " i.notes, i.image_filename, i.submitted_by_user, i.date_reported,"
+    " i.notes, i.image_filename, i.submitted_by_user, i.date_reported, i.happened_on,"
+    " i.held_at, i.verify_question,"
     " COALESCE(json_agg(json_build_object('group', a.attributetype, 'value', a.description)"
     "   ORDER BY a.attributetype_id) FILTER (WHERE a.attributetype_id IS NOT NULL),"
     "   '[]') AS details"
@@ -55,6 +51,7 @@ def query_items(cur, where: str, params: tuple, limit: int | None = None, offset
         row["details"] = sorted(row["details"], key=lambda d: catalog.group_rank(d["group"]))
         for detail in row["details"]:
             detail["label"] = catalog.label_for(detail["group"])
+        row["name"] = catalog.describe(row)
     return rows
 
 
@@ -71,30 +68,93 @@ def _page_number() -> int:
     return max(request.args.get("page", 1, type=int) or 1, 1)
 
 
+def _counts(cur, sql: str, item_ids: list[int]) -> dict[int, int]:
+    """Run a `SELECT item_id, count(*) AS n ... = ANY(%s) GROUP BY item_id` query."""
+    if not item_ids:
+        return {}
+    cur.execute(sql, (item_ids,))
+    return {row["item_id"]: row["n"] for row in cur.fetchall()}
+
+
+def _match_counts(cur, lost_ids: list[int]) -> dict[int, int]:
+    return _counts(
+        cur,
+        "SELECT m.lost_item_id AS item_id, count(*) AS n FROM matches m"
+        " JOIN item f ON f.item_id = m.found_item_id AND f.status = 'Found'"
+        " WHERE m.lost_item_id = ANY(%s) GROUP BY m.lost_item_id",
+        lost_ids,
+    )
+
+
+def _pending_claim_counts(cur, found_ids: list[int]) -> dict[int, int]:
+    return _counts(
+        cur,
+        "SELECT item_id, count(*) AS n FROM claims"
+        " WHERE status = 'pending' AND item_id = ANY(%s) GROUP BY item_id",
+        found_ids,
+    )
+
+
 # --------------------------------------------------------------------------- home / browse
 
 
 @bp.route("/")
-@login_required
 def home():
     cur = get_db().cursor()
+    if g.user is None:
+        cur.execute("SELECT count(*) AS n FROM item WHERE status = 'Found'")
+        return render_template("landing.html", waiting=cur.fetchone()["n"])
+
+    user_id = g.user["user_id"]
+    mine = query_items(
+        cur, "i.submitted_by_user = %s AND i.status IN ('Lost', 'Found')", (user_id,)
+    )
+    lost_ids = [i["item_id"] for i in mine if i["status"] == "Lost"]
+    found_ids = [i["item_id"] for i in mine if i["status"] == "Found"]
+    match_counts = _match_counts(cur, lost_ids)
+    claim_counts = _pending_claim_counts(cur, found_ids)
+
+    attention = []
+    for item in mine:
+        if item["status"] == "Found" and claim_counts.get(item["item_id"]):
+            n = claim_counts[item["item_id"]]
+            attention.append(
+                {
+                    "item": item,
+                    "text": f"{n} {'person thinks' if n == 1 else 'people think'} "
+                    f"this is theirs. Review {'the claim' if n == 1 else 'the claims'}.",
+                    "action": "Review",
+                }
+            )
+        elif item["status"] == "Lost" and match_counts.get(item["item_id"]):
+            n = match_counts[item["item_id"]]
+            attention.append(
+                {
+                    "item": item,
+                    "text": f"{n} possible {'match' if n == 1 else 'matches'} turned in. "
+                    "Is one of them yours?",
+                    "action": "Take a look",
+                }
+            )
+
+    cur.execute(
+        "SELECT c.claim_id, c.status, c.item_id FROM claims c"
+        " WHERE c.claimant_id = %s AND c.status <> 'declined' ORDER BY c.created_at DESC",
+        (user_id,),
+    )
+    my_claims = cur.fetchall()
+    approved = [c for c in my_claims if c["status"] == "approved"]
+    waiting_on = [c for c in my_claims if c["status"] == "pending"]
+
     cur.execute("SELECT count(*) AS n FROM item WHERE status = 'Found'")
-    waiting = cur.fetchone()["n"]
-    cur.execute(
-        "SELECT count(*) AS n FROM item"
-        " WHERE submitted_by_user = %s AND status IN ('Lost', 'Found')",
-        (g.user["user_id"],),
+    return render_template(
+        "dashboard.html",
+        attention=attention,
+        approved=approved,
+        waiting_on=waiting_on,
+        mine_count=len(mine),
+        waiting=cur.fetchone()["n"],
     )
-    mine = cur.fetchone()["n"]
-    cur.execute(
-        "SELECT count(DISTINCT m.found_item_id) AS n FROM matches m"
-        " JOIN item l ON l.item_id = m.lost_item_id AND l.status = 'Lost'"
-        " JOIN item f ON f.item_id = m.found_item_id AND f.status = 'Found'"
-        " WHERE l.submitted_by_user = %s",
-        (g.user["user_id"],),
-    )
-    possible = cur.fetchone()["n"]
-    return render_template("home.html", waiting=waiting, mine=mine, possible=possible)
 
 
 @bp.route("/browse/")
@@ -141,145 +201,32 @@ def browse():
 def my_items():
     cur = get_db().cursor()
     items = query_items(cur, "i.submitted_by_user = %s", (g.user["user_id"],))
-    return render_template("my_items.html", items=items)
-
-
-# --------------------------------------------------------------------------- reporting
-
-
-def _parse_report(cur, itemtype: dict, form):
-    """Validate the submitted details. Returns (attribute_ids, title, notes, selected, errors)."""
-    groups = catalog.allowed_attributes(cur, itemtype["itemtype_id"])
-    errors: list[str] = []
-    attribute_ids: list[int] = []
-    selected: dict[str, int] = {}
-    for group, options in groups.items():
-        raw = form.get(f"attr:{group}", "").strip()
-        if not raw:
-            continue
-        valid = {str(o["id"]) for o in options}
-        if raw not in valid:
-            errors.append(f"“{raw}” is not a valid choice for {catalog.label_for(group).lower()}.")
-            continue
-        attribute_ids.append(int(raw))
-        selected[group] = int(raw)
-
-    title = form.get("book_title", "").strip() if itemtype["requires_title"] else ""
-    if len(title) > MAX_TITLE:
-        errors.append(f"The title must be {MAX_TITLE} characters or fewer.")
-    notes = form.get("notes", "").strip()
-    if len(notes) > MAX_NOTES:
-        errors.append(f"Notes must be {MAX_NOTES} characters or fewer.")
-
-    descriptive = [g_ for g_ in selected if g_ != "Location"]
-    if not errors and not descriptive and not title:
-        errors.append("Please describe the item with at least one detail besides the location.")
-    return attribute_ids, title, notes, selected, errors
-
-
-def _report(kind: str):
-    """Shared handler for the lost (kind='Lost') and found (kind='Found') forms."""
-    db = get_db()
-    cur = db.cursor()
-    types = catalog.item_types(cur)
-    by_id = {t["itemtype_id"]: t for t in types}
-    endpoint = "items.lost_claim" if kind == "Lost" else "items.found_claim"
-
-    if request.method == "POST":
-        itemtype = by_id.get(request.form.get("itemtype_id", type=int))
-        if itemtype is None:
-            abort(400)
-    else:
-        itemtype = by_id.get(request.args.get("type", type=int))
-
-    context = {"kind": kind, "endpoint": endpoint, "types": types, "itemtype": itemtype}
-    if itemtype is None:
-        return render_template("claim.html", **context)
-
-    groups = catalog.allowed_attributes(cur, itemtype["itemtype_id"])
-    context["groups"] = [
-        {"name": name, "label": catalog.label_for(name), "options": options}
-        for name, options in groups.items()
+    match_counts = _match_counts(cur, [i["item_id"] for i in items if i["status"] == "Lost"])
+    claim_counts = _pending_claim_counts(
+        cur, [i["item_id"] for i in items if i["status"] == "Found"]
+    )
+    for item in items:
+        item["badge_note"] = _badge_note(item, match_counts, claim_counts)
+    sections = [
+        ("Still looking", [i for i in items if i["status"] == "Lost"]),
+        ("Turned in, waiting for an owner", [i for i in items if i["status"] == "Found"]),
+        ("Back with their owner", [i for i in items if i["status"] == "Returned"]),
     ]
-    if request.method == "GET":
-        return render_template("claim.html", selected={}, form=request.args, **context)
-
-    attribute_ids, title, notes, selected, errors = _parse_report(cur, itemtype, request.form)
-    upload_folder = current_app.config["UPLOAD_FOLDER"]
-    image_name = None
-    if not errors:
-        try:
-            image_name = save_image(request.files.get("image-upload"), upload_folder)
-        except UploadError as exc:
-            errors.append(str(exc))
-    if errors:
-        return (
-            render_template(
-                "claim.html", selected=selected, form=request.form, errors=errors, **context
-            ),
-            400,
-        )
-
-    try:
-        cur.execute(
-            "INSERT INTO item (itemtype_id, status, reported_as, book_title, notes,"
-            " image_filename, submitted_by_user) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            " RETURNING item_id",
-            (
-                itemtype["itemtype_id"],
-                kind,
-                kind,
-                title or None,
-                notes or None,
-                image_name,
-                g.user["user_id"],
-            ),
-        )
-        item_id = cur.fetchone()["item_id"]
-        cur.executemany(
-            "INSERT INTO item_detail (item_id, attributetype_id) VALUES (%s, %s)",
-            [(item_id, attr_id) for attr_id in attribute_ids],
-        )
-        new_matches = record_matches(cur, item_id, current_app.config["MATCH_MIN_SCORE"])
-        db.commit()
-    except Exception:
-        db.rollback()
-        delete_image(upload_folder, image_name)
-        raise
-
-    if kind == "Found":
-        notify_matches(current_app.config, db, new_matches)
-        flash("Thanks for turning this in! It's now listed in the locker.", "success")
-    elif new_matches:
-        flash(
-            f"Your lost item report is saved, and we found {len(new_matches)} possible "
-            f"match{'es' if len(new_matches) != 1 else ''}.",
-            "success",
-        )
-    else:
-        flash(
-            "Your lost item report is saved. We'll email you if something similar is turned in.",
-            "success",
-        )
-    return redirect(url_for("items.detail", item_id=item_id))
+    return render_template("my_items.html", sections=sections, total=len(items))
 
 
-@bp.route("/lostitem/", methods=("GET", "POST"))
-@login_required
-def lost_claim():
-    return _report("Lost")
-
-
-@bp.route("/foundItem/", methods=("GET", "POST"))
-@login_required
-def found_claim():
-    return _report("Found")
+def _badge_note(item, match_counts, claim_counts) -> str:
+    if item["status"] == "Lost" and (n := match_counts.get(item["item_id"])):
+        return f"{n} possible {'match' if n == 1 else 'matches'}"
+    if item["status"] == "Found" and (n := claim_counts.get(item["item_id"])):
+        return f"{n} {'claim' if n == 1 else 'claims'} to review"
+    return ""
 
 
 # --------------------------------------------------------------------------- one item
 
 
-def _get_visible_item(cur, item_id: int):
+def get_visible_item(cur, item_id: int):
     items = query_items(cur, "i.item_id = %s", (item_id,))
     if not items:
         abort(404)
@@ -290,12 +237,50 @@ def _get_visible_item(cur, item_id: int):
     return item
 
 
+def progress_steps(item, *, has_matches: bool, has_claims: bool, approved: bool) -> list[dict]:
+    """The stages a report moves through, each marked done / current / upcoming."""
+    if item["reported_as"] == "Lost":
+        names = ["Reported", "Watching for matches", "Possible match", "Back with you"]
+        if item["status"] == "Returned":
+            current = 3
+        elif has_matches:
+            current = 2
+        else:
+            current = 1
+    else:
+        names = ["Listed", "Claim received", "Owner verified", "Returned"]
+        if item["status"] == "Returned":
+            current = 3
+        elif approved:
+            current = 2
+        elif has_claims:
+            current = 1
+        else:
+            current = 0
+    done_through = current if item["status"] == "Returned" else current - 1
+    steps = []
+    for index, name in enumerate(names):
+        if index <= done_through:
+            state = "done"
+        elif index == current:
+            state = "current"
+        else:
+            state = "todo"
+        steps.append({"name": name, "state": state})
+    return steps
+
+
 @bp.route("/items/<int:item_id>")
 @login_required
 def detail(item_id: int):
     cur = get_db().cursor()
-    item = _get_visible_item(cur, item_id)
+    item = get_visible_item(cur, item_id)
+    manage = can_manage(item)
     matches = []
+    claims = []
+    my_claim = None
+    finder = None
+
     if item["reported_as"] == "Lost" and item["status"] == "Lost":
         scores = {}
         cur.execute("SELECT found_item_id, score FROM matches WHERE lost_item_id = %s", (item_id,))
@@ -304,16 +289,52 @@ def detail(item_id: int):
         if scores:
             found = query_items(cur, "i.item_id = ANY(%s) AND i.status = 'Found'", (list(scores),))
             matches = sorted(found, key=lambda f: -scores[f["item_id"]])
+
+    if item["reported_as"] == "Found":
+        cur.execute(
+            "SELECT c.claim_id, c.claimant_id, c.answer, c.status, c.created_at, u.name, u.email"
+            " FROM claims c JOIN users u ON u.user_id = c.claimant_id"
+            " WHERE c.item_id = %s ORDER BY c.created_at",
+            (item_id,),
+        )
+        all_claims = cur.fetchall()
+        if manage:
+            claims = all_claims
+        else:
+            my_claim = next((c for c in all_claims if c["claimant_id"] == g.user["user_id"]), None)
+            if my_claim and my_claim["status"] == "approved":
+                cur.execute(
+                    "SELECT name, email FROM users WHERE user_id = %s", (item["submitted_by_user"],)
+                )
+                finder = cur.fetchone()
+        has_claims = bool(all_claims)
+        approved = any(c["status"] == "approved" for c in all_claims)
+    else:
+        has_claims = approved = False
+
+    steps = (
+        progress_steps(item, has_matches=bool(matches), has_claims=has_claims, approved=approved)
+        if manage
+        else None
+    )
     return render_template(
         "item.html",
         item=item,
         matches=matches,
-        can_manage=can_manage(item),
+        claims=claims,
+        my_claim=my_claim,
+        finder=finder,
+        steps=steps,
+        can_manage=manage,
+        question=item["verify_question"] or DEFAULT_QUESTION,
         claim_instructions=current_app.config["CLAIM_INSTRUCTIONS"],
     )
 
 
-def _manageable_item(cur, item_id: int):
+DEFAULT_QUESTION = "Tell us something about it that isn't in the photo or listing."
+
+
+def manageable_item(cur, item_id: int):
     cur.execute(
         "SELECT item_id, status, submitted_by_user, image_filename FROM item WHERE item_id = %s",
         (item_id,),
@@ -329,7 +350,7 @@ def _manageable_item(cur, item_id: int):
 def delete(item_id: int):
     db = get_db()
     cur = db.cursor()
-    item = _manageable_item(cur, item_id)
+    item = manageable_item(cur, item_id)
     cur.execute("DELETE FROM item WHERE item_id = %s", (item_id,))
     db.commit()
     delete_image(current_app.config["UPLOAD_FOLDER"], item["image_filename"])
@@ -342,9 +363,14 @@ def delete(item_id: int):
 def mark_returned(item_id: int):
     db = get_db()
     cur = db.cursor()
-    _manageable_item(cur, item_id)
+    manageable_item(cur, item_id)
     cur.execute(
         "UPDATE item SET status = 'Returned' WHERE item_id = %s AND status IN ('Lost', 'Found')",
+        (item_id,),
+    )
+    cur.execute(
+        "UPDATE claims SET status = 'declined', decided_at = now()"
+        " WHERE item_id = %s AND status = 'pending'",
         (item_id,),
     )
     db.commit()

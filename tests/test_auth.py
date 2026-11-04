@@ -9,7 +9,7 @@ from .conftest import register
 
 
 def test_pages_require_login(client):
-    for path in ("/", "/browse/", "/my-items/", "/lostitem/", "/foundItem/", "/items/1"):
+    for path in ("/browse/", "/my-items/", "/lostitem/", "/foundItem/", "/items/1"):
         response = client.get(path)
         assert response.status_code == 302
         assert "/login" in response.headers["Location"]
@@ -24,7 +24,7 @@ def test_register_login_logout(app):
     assert register(c).status_code == 302
     assert c.get("/").status_code == 200
     assert c.post("/logout").status_code == 302
-    assert c.get("/").status_code == 302
+    assert c.get("/my-items/").status_code == 302
 
     response = c.post("/login", data={"email": "ALICE@example.com", "password": "correct horse"})
     assert response.status_code == 302

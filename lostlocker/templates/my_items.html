@@ -2,13 +2,20 @@
 {% block title %}My items · Lost Locker{% endblock %}
 {% block content %}
 <h1>My items</h1>
-{% if items %}
-  <div class="items">
-    {% for item in items %}{% set show_status = true %}{% include '_item.html' %}{% endfor %}
-  </div>
+{% if total %}
+  {% for title, items in sections if items %}
+    <h2>{{ title }}</h2>
+    <div class="items">
+      {% for item in items %}{% set show_status = false %}{% include '_item.html' %}{% endfor %}
+    </div>
+  {% endfor %}
 {% else %}
-  <p>You haven't reported anything yet.</p>
-  <p><a class="button" href="{{ url_for('items.lost_claim') }}">I lost something</a>
-     <a class="button" href="{{ url_for('items.found_claim') }}">I found something</a></p>
+  <div class="card">
+    <p>You haven't reported anything yet.</p>
+    <div class="actions" style="margin-top:0">
+      <a class="button primary" href="{{ url_for('report.lost') }}">I lost something</a>
+      <a class="button" href="{{ url_for('report.found') }}">I found something</a>
+    </div>
+  </div>
 {% endif %}
 {% endblock %}

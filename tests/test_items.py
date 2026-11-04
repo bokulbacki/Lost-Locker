@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from .conftest import attribute_id, item_id_from, png_bytes, report
 
 CLOTHING, BOTTLE, DEVICE, BAG, BOOK = 1, 2, 3, 4, 5
@@ -54,7 +56,7 @@ def test_rejects_value_from_another_item_type(app, alice):
     # "Hydro Flask" is a bottle brand and not offered for clothing
     response = report(app, alice, "Found", CLOTHING, {"Brand": "Hydro Flask"})
     assert response.status_code == 400
-    assert b"not a valid choice" in response.data
+    assert b"pick one of the listed options" in response.data
 
 
 def test_rejects_unknown_item_type(alice):
@@ -175,7 +177,7 @@ def test_photo_upload_is_stored_and_served(app, alice):
     )
     item_id = item_id_from(response)
     page = alice.get(f"/items/{item_id}").get_data(as_text=True)
-    src = page.split('src="')[1].split('"')[0]
+    src = re.search(r'src="(/images/[^"]+)"', page).group(1)
     image = alice.get(src)
     assert image.status_code == 200
     assert image.mimetype == "image/jpeg"  # re-encoded, whatever was uploaded

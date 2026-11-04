@@ -88,6 +88,7 @@ def register():
         name = request.form.get("name", "").strip()
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
+        next_url = request.values.get("next", "")
         errors = []
         if not name or len(name) > 100:
             errors.append("Please enter your name (100 characters or fewer).")
@@ -116,11 +117,11 @@ def register():
                 session.clear()
                 session["user_id"] = row["user_id"]
                 flash("Welcome to Lost Locker!", "success")
-                return redirect(url_for("items.home"))
+                return redirect(safe_next(next_url))
         for message in errors:
             flash(message, "error")
-        return render_template("register.html", name=name, email=email), 400
-    return render_template("register.html", name="", email="")
+        return render_template("register.html", name=name, email=email, next=next_url), 400
+    return render_template("register.html", name="", email="", next=request.args.get("next", ""))
 
 
 @bp.route("/login", methods=("GET", "POST"))

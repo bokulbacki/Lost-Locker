@@ -9,7 +9,7 @@ import click
 from flask import Flask, render_template
 from flask_wtf.csrf import CSRFError, CSRFProtect
 
-from . import api, auth, db, items
+from . import api, auth, catalog, claims, db, items, report
 from .config import load_config
 
 csrf = CSRFProtect()
@@ -41,7 +41,10 @@ def create_app(test_config: dict | None = None) -> Flask:
     db.init_app(app)
     app.register_blueprint(auth.bp)
     app.register_blueprint(items.bp)
+    app.register_blueprint(report.bp)
+    app.register_blueprint(claims.bp)
     app.register_blueprint(api.bp)
+    app.jinja_env.globals["icon_for"] = catalog.icon_for
     _register_error_handlers(app)
     _register_cli(app)
 

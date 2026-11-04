@@ -3,19 +3,44 @@
 A lost-and-found site for students, built as a year-long project for the University of San Diego
 student web portal. (Not affiliated with USD.)
 
-- **Lost something?** Describe it. If something similar has already been turned in, you see it
-  straight away. If not, the report is kept, and you get an email when a matching item is turned in.
-- **Found something?** Add it to the locker with a photo. If it matches someone's lost report,
-  they are emailed.
+- **Lost something?** Pick what it is, then tap what you remember: brand, colour, where. Every
+  detail is optional except one. If something similar has already been turned in, you see it
+  straight away. If not, the report is kept, and you get an email when a match is turned in.
+- **Found something?** Add a photo if you like, say where the item is now (with you, at the lost &
+  found desk, or where you found it), and optionally write a question only the owner could answer.
+- **Claims.** An owner who spots their item answers the finder's question. The finder approves or
+  declines. Contact details are shared only after approval.
+- **Home** is a landing page for visitors and, once you sign in, a short "needs your attention" list
+  (possible matches, claims to review) plus a step-by-step progress tracker on each report.
 - **Browse** everything waiting to be claimed, with search, filters and paging.
-- **My items** lists your own reports. You can mark them returned or delete them.
+- **My items** groups your reports by status. You can mark them returned or delete them.
 
 Lost reports are private to their owner. Found items are visible to logged-in users.
+
+## Accessibility
+
+The goal is that anyone can report an item in under a minute, on a phone, with one hand.
+
+- Big tap targets (44px minimum). Choices are chips and colour swatches instead of long dropdowns,
+  and they are real radio buttons, so they work with keyboards and screen readers.
+- A **Display** menu in every page header: light / dark / system theme, high contrast, and three
+  text sizes. Choices are remembered in the browser.
+- Skip link, landmarks, one `h1` per page, visible focus, and form errors in a summary that receives
+  focus and links to each field. Colour is never the only signal. Reduced-motion is respected.
+- Works without JavaScript apart from the Display menu, photo preview and show-password toggle.
+- On phones, the main navigation moves to a bottom bar. Layouts reflow down to 320px wide, even at
+  the largest text size.
+- **QR codes at drop-off spots.** `/foundItem/?loc=Copley%20Library` opens the "I found something"
+  form with that location already chosen. Print one per building.
+
+Checked with axe-core (WCAG 2.2 AA and best-practice rules) in Chrome across light, dark, high
+contrast and large text, at desktop and 375px widths: no violations. That is automated testing only.
+It has not been tried with a screen reader or by disabled users, so please do that before relying on it.
 
 ## Stack
 
 Flask · PostgreSQL (psycopg2, connection pool) · Pillow · Flask-WTF (CSRF) · gunicorn.
-No JavaScript is needed. The pages are server-rendered.
+Pages are server-rendered. A small amount of plain JavaScript (no framework) handles the Display menu and photo preview.
 
 ## Run it locally
 
@@ -78,13 +103,15 @@ lostlocker/
   db.py             connection pool and migration runner
   migrations/       numbered .sql files, applied in order by `flask migrate`
   auth.py           register / login / logout
-  items.py          report, browse, my items, item page, delete, photos
+  items.py          home/dashboard, browse, my items, item page, delete, photos
+  report.py         the two-step lost / found form
+  claims.py         claim, approve, decline
   api.py            JSON: item types and their allowed attributes
   matching.py       scoring and storing matches
   notifications.py  email
   uploads.py        photo validation and storage
   catalog.py        item types and attribute options
-  templates/ static/
+  templates/ static/   (css/app.css is the whole design system; js/ is the Display menu etc.)
 tests/              pytest suite
 ```
 
